@@ -1,0 +1,32 @@
+{
+  "id": "unslop-canon",
+  "name": "unslop-canon",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Retrieve the current free canon without copying a second independent canon.",
+  "value": "Retrieve the current free canon without copying a second independent canon.",
+  "input": {
+    "source": {
+      "type": "object",
+      "required": true,
+      "notes": "Released canon/MCP source and requested version."
+    }
+  },
+  "output": {
+    "canon": {
+      "type": "object",
+      "notes": "Rules, version, update date and digest."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/upstream-adapters.mjs",
+    "limitation": "Local adapter evidence does not establish the released Unslop MCP. Block acceptance until the free release."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

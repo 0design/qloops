@@ -1,0 +1,830 @@
+{
+  "schemaVersion": 1,
+  "contentTypes": [
+    "loop-template",
+    "component",
+    "demo"
+  ],
+  "acceptancePolicy": "Resolve and accept every required component before starting template acceptance. Direct APIs, fixtures and alternate providers cannot substitute for the declared Registry path.",
+  "templates": [
+    {
+      "id": "sdd-pipeline",
+      "name": "SDD pipeline",
+      "contentType": "loop-template",
+      "value": "Turn an intent into an approved specification and a verified project change.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "cli",
+      "dependencies": [
+        {
+          "id": "llm-call-cli",
+          "version": "0.1.0"
+        },
+        {
+          "id": "approval-gate",
+          "version": "1.0.0"
+        },
+        {
+          "id": "determined",
+          "version": "0.1.0"
+        }
+      ],
+      "stages": [
+        "Brief in stages",
+        "Confirm understanding",
+        "Write and approve a versioned specification",
+        "Execute and verify the exact approved version"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "sdd-pipeline",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "llm-call-cli",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "approval-gate",
+            "version": "1.0.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "workspace-apply",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "verify-artifact",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "determined",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "llm-call-cli@0.1.0",
+          "approval-gate@1.0.0",
+          "workspace-apply@0.1.0",
+          "verify-artifact@0.1.0",
+          "determined@0.1.0"
+        ]
+      }
+    },
+    {
+      "id": "content-feed",
+      "name": "Content feed",
+      "contentType": "loop-template",
+      "value": "Collect and normalize relevant source material without reviewing every source manually.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "cli",
+      "dependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "parse-web",
+          "version": "0.1.0"
+        },
+        {
+          "id": "deduplicate",
+          "version": "0.1.0"
+        },
+        {
+          "id": "llm-call-cli",
+          "version": "0.1.0"
+        }
+      ],
+      "stages": [
+        "Confirm sources and selection rules",
+        "Fetch and parse sources",
+        "Normalize and deduplicate items",
+        "Select relevant material with source links",
+        "Persist the feed and cursor"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "content-feed",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "fetch",
+            "version": "1.0.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "parse-web",
+            "version": "0.1.0",
+            "implementation": "planned",
+            "acceptance": "pending"
+          },
+          {
+            "id": "deduplicate",
+            "version": "0.1.0",
+            "implementation": "planned",
+            "acceptance": "pending"
+          },
+          {
+            "id": "llm-call-cli",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "fetch@1.0.0",
+          "parse-web@0.1.0",
+          "deduplicate@0.1.0",
+          "llm-call-cli@0.1.0"
+        ]
+      }
+    },
+    {
+      "id": "digest",
+      "name": "Digest",
+      "contentType": "loop-template",
+      "value": "Turn selected feed material into a useful editorial digest.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "cli",
+      "dependencies": [
+        {
+          "id": "llm-call-cli",
+          "version": "0.1.0"
+        },
+        {
+          "id": "approval-gate",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ],
+      "stages": [
+        "Read the selected feed and editorial profile",
+        "Compose a sourced draft",
+        "Check facts and links",
+        "Obtain draft-specific approval",
+        "Deliver once to the authorized destination"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "digest",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "llm-call-cli",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "approval-gate",
+            "version": "1.0.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "api-request",
+            "version": "1.0.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "llm-call-cli@0.1.0",
+          "approval-gate@1.0.0",
+          "api-request@1.0.0"
+        ]
+      }
+    },
+    {
+      "id": "aindf-check",
+      "name": "aindf-check",
+      "contentType": "loop-template",
+      "value": "Distinguish DS readiness from compliance of a concrete composition.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "none",
+      "dependencies": [
+        {
+          "id": "aindf-validator",
+          "version": "0.1.0"
+        },
+        {
+          "id": "verify-artifact",
+          "version": "0.1.0"
+        }
+      ],
+      "stages": [
+        "Select readiness or composition mode",
+        "Pin subject and criteria",
+        "Evaluate rules",
+        "Report failures and unknown coverage"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "aindf-check",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "aindf-validator",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "verify-artifact",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "aindf-validator@0.1.0",
+          "verify-artifact@0.1.0"
+        ]
+      }
+    },
+    {
+      "id": "unslop",
+      "name": "Unslop",
+      "contentType": "loop-template",
+      "value": "Find design-canon violations without copying the canon.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "cli",
+      "dependencies": [
+        {
+          "id": "unslop-canon",
+          "version": "0.1.0"
+        },
+        {
+          "id": "llm-call-cli",
+          "version": "0.1.0"
+        },
+        {
+          "id": "verify-artifact",
+          "version": "0.1.0"
+        }
+      ],
+      "stages": [
+        "Wait for the free Unslop release",
+        "Fetch and pin the canon",
+        "Audit the selected artifact",
+        "Report findings; optional recommendations are a separate service"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "unslop",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "unslop-canon",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "llm-call-cli",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "verify-artifact",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "unslop-canon@0.1.0",
+          "llm-call-cli@0.1.0",
+          "verify-artifact@0.1.0"
+        ]
+      }
+    },
+    {
+      "id": "annotation-fix",
+      "name": "Fix website annotations",
+      "contentType": "loop-template",
+      "value": "Apply website feedback and return evidence to each original annotation.",
+      "version": "0.1.0",
+      "status": "contract-only",
+      "inference": "cli",
+      "dependencies": [
+        {
+          "id": "agentation",
+          "version": "0.1.0"
+        },
+        {
+          "id": "llm-call-cli",
+          "version": "0.1.0"
+        },
+        {
+          "id": "determined",
+          "version": "0.1.0"
+        },
+        {
+          "id": "each",
+          "version": "0.1.0"
+        }
+      ],
+      "stages": [
+        "Read pending annotations",
+        "Clarify ambiguous feedback",
+        "Apply bounded changes",
+        "Verify the affected browser scenario",
+        "Resolve with evidence or report a blocker"
+      ],
+      "acceptance": {
+        "status": "blocked",
+        "evidence": []
+      },
+      "readiness": {
+        "templateId": "annotation-fix",
+        "status": "blocked",
+        "blockers": [
+          {
+            "id": "agentation",
+            "version": "0.1.0",
+            "implementation": "planned",
+            "acceptance": "pending"
+          },
+          {
+            "id": "llm-call-cli",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "workspace-apply",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "verify-artifact",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "determined",
+            "version": "0.1.0",
+            "implementation": "partial",
+            "acceptance": "pending"
+          },
+          {
+            "id": "each",
+            "version": "0.1.0",
+            "implementation": "planned",
+            "acceptance": "pending"
+          }
+        ],
+        "components": [
+          "agentation@0.1.0",
+          "llm-call-cli@0.1.0",
+          "workspace-apply@0.1.0",
+          "verify-artifact@0.1.0",
+          "determined@0.1.0",
+          "each@0.1.0"
+        ]
+      }
+    }
+  ],
+  "reusableLoopComponents": [
+    "determined"
+  ],
+  "builtins": [
+    {
+      "id": "api-request",
+      "name": "API request",
+      "kind": "step",
+      "description": "An outgoing request. SPEC-MANIFEST.md §5.3. Without body, the last successful output is sent in an envelope {runId, templateId, payload}. A loop may end here. This is a complete loop, not an unfinished one. SPEC does not enumerate response fields.",
+      "input": {
+        "url": {
+          "type": "string",
+          "required": true,
+          "notes": "templated. SPEC-MANIFEST.md §5.3."
+        },
+        "method": {
+          "type": "string",
+          "required": false,
+          "notes": "GET/POST/PUT/PATCH/DELETE. Default POST."
+        },
+        "body": {
+          "type": "string",
+          "required": false,
+          "notes": "JSON string or text. templated, deeply."
+        },
+        "headers": {
+          "type": "string",
+          "required": false,
+          "notes": "JSON string. templated."
+        },
+        "expect": {
+          "type": "string",
+          "required": false,
+          "notes": "2xx | any. Default 2xx."
+        },
+        "timeoutSec": {
+          "type": "number",
+          "required": false,
+          "notes": "Default 30."
+        }
+      },
+      "output": {
+        "response": {
+          "type": "object",
+          "notes": "SPEC-MANIFEST.md §5.3 does not list output fields. The step performs the request; when it is last, the loop is complete."
+        }
+      },
+      "needsEnv": [],
+      "usedBy": [
+        "brand-mentions",
+        "budget-guard",
+        "content-factory",
+        "content-feed",
+        "feed-fanout",
+        "json-digest",
+        "price-watch",
+        "release-watch",
+        "strict-gate",
+        "webhook-relay",
+        "wide-fanout"
+      ],
+      "author": "0design",
+      "version": "1.0.0",
+      "license": "MIT",
+      "origin": {
+        "repository": "0design/QFactory.io",
+        "path": "content/registry/components/api-request.json",
+        "revision": "e453b57"
+      },
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "permissions": {
+        "execution": "none"
+      },
+      "evidence": {
+        "status": "no-live-proof",
+        "releaseAcceptance": "pending"
+      },
+      "sha256": "a05e27501e41b1fc84853d7c20b63eedb90dcad3461c6c4450150c1d0e25a512",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "An outgoing request. SPEC-MANIFEST.md §5.3. Without body, the last successful output is sent in an envelope {runId, templateId, payload}. A loop may end here. This is a complete loop, not an unfinished one. SPEC does not enumerate response fields.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "distribution": "builtin"
+    },
+    {
+      "id": "fan-out",
+      "name": "Fan-out",
+      "kind": "step",
+      "description": "A lane per item. SPEC-MANIFEST.md §5.5. over must be exactly one placeholder resolving to an ARRAY. Mixed text returns nothing rather than guessing. If it does not resolve to an array, the step fails and says why. Each lane step sees its own item through {{item.…}} and {{index}}. Truncation is never silent. Without over, the lane is inlined and runs once, and the node says so rather than pretending to expand.",
+      "input": {
+        "over": {
+          "type": "string",
+          "required": false,
+          "notes": "a single template resolving to an ARRAY, e.g. {{steps.Fetch feed.output.entries}}."
+        },
+        "maxItems": {
+          "type": "number",
+          "required": false,
+          "notes": "cap. Default 50."
+        },
+        "then": {
+          "type": "array",
+          "required": true,
+          "notes": "REQUIRED — the lane."
+        }
+      },
+      "output": {
+        "itemsFound": {
+          "type": "number",
+          "notes": "How many items the source held."
+        },
+        "itemsTaken": {
+          "type": "number",
+          "notes": "How many lanes were opened after the cap."
+        },
+        "stepsCreated": {
+          "type": "number",
+          "notes": "Lane steps created."
+        },
+        "truncated": {
+          "type": "string",
+          "notes": "A note when the cap cut the list. Never silent."
+        }
+      },
+      "needsEnv": [],
+      "usedBy": [
+        "feed-fanout",
+        "wide-fanout"
+      ],
+      "author": "0design",
+      "version": "1.0.0",
+      "license": "MIT",
+      "origin": {
+        "repository": "0design/QFactory.io",
+        "path": "content/registry/components/fan-out.json",
+        "revision": "e453b57"
+      },
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "permissions": {
+        "execution": "none"
+      },
+      "evidence": {
+        "status": "no-live-proof",
+        "releaseAcceptance": "pending"
+      },
+      "sha256": "bd7e15f89e76f8360d2419532a2c890f7a796342cf67700d01fc7f97580163b6",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "A lane per item. SPEC-MANIFEST.md §5.5. over must be exactly one placeholder resolving to an ARRAY. Mixed text returns nothing rather than guessing. If it does not resolve to an array, the step fails and says why. Each lane step sees its own item through {{item.…}} and {{index}}. Truncation is never silent. Without over, the lane is inlined and runs once, and the node says so rather than pretending to expand.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "distribution": "builtin"
+    },
+    {
+      "id": "fetch",
+      "name": "Fetch",
+      "kind": "step",
+      "description": "Read a source. SPEC-MANIFEST.md §5.1. Fails on non-2xx, on a network error, and — for format: rss — on a feed with no items. An empty feed is not a success: the steps after it expect material. The RSS reader is regex-based, not an XML parser.",
+      "input": {
+        "url": {
+          "type": "string",
+          "required": true,
+          "notes": "templated. SPEC-MANIFEST.md §5.1."
+        },
+        "format": {
+          "type": "string",
+          "required": false,
+          "notes": "text | json | rss. Default text."
+        },
+        "limit": {
+          "type": "number",
+          "required": false,
+          "notes": "rss only, entries kept. Default 10."
+        },
+        "timeoutSec": {
+          "type": "number",
+          "required": false,
+          "notes": "Default 30."
+        }
+      },
+      "output": {
+        "status": {
+          "type": "number",
+          "notes": "HTTP status. Present on every format."
+        },
+        "url": {
+          "type": "string",
+          "notes": "The URL that was fetched."
+        },
+        "body": {
+          "type": "string",
+          "notes": "format: text."
+        },
+        "json": {
+          "type": "object",
+          "notes": "format: json."
+        },
+        "count": {
+          "type": "number",
+          "notes": "format: rss — number of entries kept."
+        },
+        "entries": {
+          "type": "array",
+          "notes": "format: rss — each entry is {title, link, summary, published}."
+        }
+      },
+      "needsEnv": [],
+      "usedBy": [
+        "brand-mentions",
+        "budget-guard",
+        "content-factory",
+        "content-feed",
+        "feed-fanout",
+        "json-digest",
+        "price-watch",
+        "release-watch",
+        "strict-gate",
+        "webhook-relay",
+        "wide-fanout"
+      ],
+      "author": "0design",
+      "version": "1.0.0",
+      "license": "MIT",
+      "origin": {
+        "repository": "0design/QFactory.io",
+        "path": "content/registry/components/fetch.json",
+        "revision": "e453b57"
+      },
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "permissions": {
+        "execution": "none"
+      },
+      "evidence": {
+        "status": "no-live-proof",
+        "releaseAcceptance": "pending"
+      },
+      "sha256": "2b1f253160e925d0a2948e6669aea37da178d081741a659fb297926bce76601c",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "Read a source. SPEC-MANIFEST.md §5.1. Fails on non-2xx, on a network error, and — for format: rss — on a feed with no items. An empty feed is not a success: the steps after it expect material. The RSS reader is regex-based, not an XML parser.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "distribution": "builtin"
+    },
+    {
+      "id": "schedule",
+      "name": "Schedule",
+      "kind": "trigger",
+      "description": "A trigger, not a runner step. SPEC-MANIFEST.md §5.6 / §3: triggers are inputs, not steps; they never appear in steps:. The runner does not act on any trigger. qloop run performs one pass; cron: documents the intended cadence, and launchd or cron actually fires it.",
+      "input": {
+        "cron": {
+          "type": "string",
+          "required": true,
+          "notes": "5 fields, UTC. Checked: field count and ranges. SPEC-MANIFEST.md §3."
+        }
+      },
+      "output": {
+        "none": {
+          "type": "null",
+          "notes": "Not a step. No runner output. Placing schedule in steps: is a validation error."
+        }
+      },
+      "needsEnv": [],
+      "usedBy": [
+        "brand-mentions",
+        "content-factory",
+        "content-feed",
+        "price-watch",
+        "release-watch"
+      ],
+      "author": "0design",
+      "version": "1.0.0",
+      "license": "MIT",
+      "origin": {
+        "repository": "0design/QFactory.io",
+        "path": "content/registry/components/schedule.json",
+        "revision": "e453b57"
+      },
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "permissions": {
+        "execution": "none"
+      },
+      "evidence": {
+        "status": "no-live-proof",
+        "releaseAcceptance": "pending"
+      },
+      "sha256": "95e7ad8e07b0fbc07675e357929a484ad7b5198455bacbbf7a2bdd90712f0f22",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "A trigger, not a runner step. SPEC-MANIFEST.md §5.6 / §3: triggers are inputs, not steps; they never appear in steps:. The runner does not act on any trigger. qloop run performs one pass; cron: documents the intended cadence, and launchd or cron actually fires it.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "distribution": "builtin"
+    },
+    {
+      "id": "if",
+      "version": "0.1.0",
+      "distribution": "builtin",
+      "contentType": "component",
+      "value": "Control execution without a public Registry listing.",
+      "implementation": {
+        "status": "planned",
+        "limitation": "Public authoring contract; a generic runtime binding is not accepted."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      }
+    },
+    {
+      "id": "switch",
+      "version": "0.1.0",
+      "distribution": "builtin",
+      "contentType": "component",
+      "value": "Control execution without a public Registry listing.",
+      "implementation": {
+        "status": "planned",
+        "limitation": "Public authoring contract; a generic runtime binding is not accepted."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      }
+    },
+    {
+      "id": "loop",
+      "version": "0.1.0",
+      "distribution": "builtin",
+      "contentType": "component",
+      "value": "Control execution without a public Registry listing.",
+      "implementation": {
+        "status": "planned",
+        "limitation": "Public authoring contract; a generic runtime binding is not accepted."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      }
+    },
+    {
+      "id": "each",
+      "version": "0.1.0",
+      "distribution": "builtin",
+      "contentType": "component",
+      "value": "Control execution without a public Registry listing.",
+      "implementation": {
+        "status": "planned",
+        "limitation": "Public authoring contract; a generic runtime binding is not accepted."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      }
+    }
+  ],
+  "builtinPolicy": {
+    "http": "GET, POST and other HTTP methods are configurations of the built-in HTTP component, not separate Registry entries. Existing runtime IDs fetch/api-request are retained for compatibility.",
+    "controlFlow": "if, switch, loop and each are built-in components. Existing fan-out is not silently treated as an accepted generic each implementation.",
+    "limits": "Bound iterations, concurrency, timeouts and retries. Cancellation and failure propagation must be tested."
+  }
+}

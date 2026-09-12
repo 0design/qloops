@@ -6,7 +6,7 @@
       "name": "Find your brand mentions",
       "description": "Filter a news feed for relevant mentions of your brand.",
       "file": "loops/brand-mentions.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -19,12 +19,13 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": "30 6 * * *",
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0025,
@@ -33,7 +34,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/brand-mentions.txt",
+      "proof": "demos/brand-mentions.txt",
       "preview": {
         "style": "applet",
         "statement": "Track mentions of your brand."
@@ -47,15 +48,21 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -63,14 +70,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "bbfb2052c86fe95be130fc4d87c6af8ec757ba91f51d21bca681ad22367b3362"
+      "sha256": "bbfb2052c86fe95be130fc4d87c6af8ec757ba91f51d21bca681ad22367b3362",
+      "value": "Find relevant brand mentions without reading every source item manually.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        },
+        {
+          "id": "schedule",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "budget-guard",
       "name": "Test the budget ceiling",
       "description": "Verify that a zero budget stops the loop before a paid step.",
       "file": "loops/budget-guard.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -83,12 +115,13 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": null,
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": null,
       "proof": null,
@@ -105,15 +138,21 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -121,14 +160,35 @@
         "status": "no-live-proof",
         "releaseAcceptance": "pending"
       },
-      "sha256": "7a123c7e7a2be4ebf41c75c7f6c0eb99b94a4a245babb0722b0ead3bdc243526"
+      "sha256": "7a123c7e7a2be4ebf41c75c7f6c0eb99b94a4a245babb0722b0ead3bdc243526",
+      "value": "Check how a configured spending limit stops a model-backed workflow before using it on real work.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "content-factory",
       "name": "Draft, check, approve, publish",
       "description": "Prepare a post and pause for your approval before publishing.",
       "file": "loops/content-factory.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 5,
       "topLevelSteps": 5,
       "fansOut": false,
@@ -142,13 +202,14 @@
       "humanGate": true,
       "agentGate": true,
       "schedule": "0 9 * * *",
-      "model": "anthropic/claude-haiku-4.5",
+      "model": null,
       "budgetUsd": 0.4,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
         "TELEGRAM_BOT_TOKEN",
-        "TELEGRAM_CHAT_ID"
+        "TELEGRAM_CHAT_ID",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0002,
@@ -157,7 +218,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/content-factory.txt",
+      "proof": "demos/content-factory.txt",
       "preview": {
         "style": "workflow"
       },
@@ -170,16 +231,26 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        },
+        {
+          "id": "approval-gate",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
           "TELEGRAM_BOT_TOKEN",
-          "TELEGRAM_CHAT_ID"
+          "TELEGRAM_CHAT_ID",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -187,14 +258,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "318948e4c25539662c6d3a7dbc8550f0ec89a1d22e6c3f1350b8e8d7900f7fa3"
+      "sha256": "318948e4c25539662c6d3a7dbc8550f0ec89a1d22e6c3f1350b8e8d7900f7fa3",
+      "value": "Turn source material into a checked draft with an explicit approval step before delivery.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        },
+        {
+          "id": "schedule",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "content-feed",
       "name": "Content feed",
-      "description": "Turn a feed into a short digest and send it to your destination.",
+      "description": "Read an RSS feed, write a short morning digest and send it to Telegram. Repeated runs may redeliver; receiver-side deduplication requires separate configuration.",
       "file": "loops/content-feed.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -207,13 +303,14 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": "30 6 * * *",
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
         "TELEGRAM_BOT_TOKEN",
-        "TELEGRAM_CHAT_ID"
+        "TELEGRAM_CHAT_ID",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0007,
@@ -222,7 +319,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/content-feed.txt",
+      "proof": "demos/content-feed.txt",
       "preview": {
         "style": "workflow"
       },
@@ -235,16 +332,22 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
           "TELEGRAM_BOT_TOKEN",
-          "TELEGRAM_CHAT_ID"
+          "TELEGRAM_CHAT_ID",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -252,14 +355,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "f9d588e3bbf9041e02e7057aae83d48b3c7e6f2a59b8d521064f8349ce9cb207"
+      "sha256": "f9d588e3bbf9041e02e7057aae83d48b3c7e6f2a59b8d521064f8349ce9cb207",
+      "value": "Condense a source feed into a readable update so the user does not need to review every item manually.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        },
+        {
+          "id": "schedule",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "feed-fanout",
       "name": "Feed fan-out",
       "description": "Give each entry its own model call and outgoing message.",
       "file": "loops/feed-fanout.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 4,
       "topLevelSteps": 2,
       "fansOut": true,
@@ -273,12 +401,13 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": null,
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.15,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.003,
@@ -287,7 +416,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/feed-fanout.txt",
+      "proof": "demos/feed-fanout.txt",
       "preview": {
         "style": "workflow"
       },
@@ -300,15 +429,21 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -316,14 +451,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "d771e462d1f40b06672a2b654153df8da3373190b209c3eb6e5f74e15c541864"
+      "sha256": "d771e462d1f40b06672a2b654153df8da3373190b209c3eb6e5f74e15c541864",
+      "value": "Process multiple feed items consistently and collect the results without repeating the same manual steps.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "fan-out",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "json-digest",
       "name": "Get a structured digest",
       "description": "Request a JSON summary and reject incorrectly formatted output.",
       "file": "loops/json-digest.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -336,12 +496,13 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": null,
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0002,
@@ -350,7 +511,7 @@
         "status": "success",
         "at": "2026-08-02"
       },
-      "proof": "examples/json-digest.txt",
+      "proof": "demos/json-digest.txt",
       "preview": {
         "style": "workflow"
       },
@@ -363,15 +524,21 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -379,14 +546,35 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "cb730da45f69c57a3f4fbcf2a97df8339907d443b7fb9f4631ed12f308bad449"
+      "sha256": "cb730da45f69c57a3f4fbcf2a97df8339907d443b7fb9f4631ed12f308bad449",
+      "value": "Produce a structured summary that a downstream service can consume without manual reformatting.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "price-watch",
       "name": "Watch for price changes",
       "description": "Read a price source and prepare an update for your destination.",
       "file": "loops/price-watch.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 4,
       "topLevelSteps": 4,
       "fansOut": false,
@@ -399,11 +587,12 @@
       "humanGate": true,
       "agentGate": true,
       "schedule": "0 8 * * *",
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0006,
@@ -412,7 +601,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/price-watch.txt",
+      "proof": "demos/price-watch.txt",
       "preview": {
         "style": "workflow"
       },
@@ -425,14 +614,24 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "approval-gate",
+          "version": "1.0.0"
+        },
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -440,14 +639,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "70e82b724ede0a7da8b3e25bd07bebd7a6198811d8653c271115dd269428d6c7"
+      "sha256": "70e82b724ede0a7da8b3e25bd07bebd7a6198811d8653c271115dd269428d6c7",
+      "value": "Surface relevant price updates without repeatedly checking the source manually.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        },
+        {
+          "id": "schedule",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "release-watch",
       "name": "Release watch",
       "description": "Follow a public GitHub repository and summarize what changed.",
       "file": "loops/release-watch.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -460,12 +684,13 @@
       "humanGate": false,
       "agentGate": false,
       "schedule": "0 7 * * 1",
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0027,
@@ -474,7 +699,7 @@
         "status": "success",
         "at": "2026-08-01"
       },
-      "proof": "examples/release-watch.txt",
+      "proof": "demos/release-watch.txt",
       "preview": {
         "style": "applet",
         "statement": "Send new releases to your webhook."
@@ -488,15 +713,21 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -504,14 +735,39 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "053b60d872a176426d35ac9fd55b653a0ed889eb57362cffe17f841e8271361c"
+      "sha256": "053b60d872a176426d35ac9fd55b653a0ed889eb57362cffe17f841e8271361c",
+      "value": "Summarize new software releases and highlight items worth reviewing without reading the full release feed.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        },
+        {
+          "id": "schedule",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "strict-gate",
       "name": "Check before continuing",
       "description": "Review an output against a rubric before the next step.",
       "file": "loops/strict-gate.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 3,
       "fansOut": false,
@@ -524,12 +780,13 @@
       "humanGate": false,
       "agentGate": true,
       "schedule": null,
-      "model": "anthropic/claude-3-haiku",
+      "model": null,
       "budgetUsd": 0.1,
       "needsEnv": [
         "OPENROUTER_API_KEY",
         "QLOOP_SOURCE_URL",
-        "QLOOP_WEBHOOK_URL"
+        "QLOOP_WEBHOOK_URL",
+        "OPENROUTER_MODEL"
       ],
       "measured": {
         "costUsd": 0.0001,
@@ -538,7 +795,7 @@
         "status": "success",
         "at": "2026-08-02"
       },
-      "proof": "examples/strict-gate.txt",
+      "proof": "demos/strict-gate.txt",
       "preview": {
         "style": "workflow"
       },
@@ -551,15 +808,25 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
-      "dependencies": [],
+      "dependencies": [
+        {
+          "id": "approval-gate",
+          "version": "1.0.0"
+        },
+        {
+          "id": "llm-call-openrouter",
+          "version": "1.0.0"
+        }
+      ],
       "permissions": {
         "environment": [
           "OPENROUTER_API_KEY",
           "QLOOP_SOURCE_URL",
-          "QLOOP_WEBHOOK_URL"
+          "QLOOP_WEBHOOK_URL",
+          "OPENROUTER_MODEL"
         ],
         "execution": "local-only"
       },
@@ -567,14 +834,35 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "d6ebf8ae34b6a888f99031f8da586c799f523855af96a60a8849d5ed14abbe0f"
+      "sha256": "d6ebf8ae34b6a888f99031f8da586c799f523855af96a60a8849d5ed14abbe0f",
+      "value": "Check a draft against an explicit rubric before allowing the next workflow step.",
+      "executionProfile": {
+        "inference": "openrouter",
+        "callerReady": false
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "webhook-relay",
       "name": "Pass data to a webhook",
       "description": "Read a JSON endpoint and forward its data without a model call.",
       "file": "loops/webhook-relay.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 2,
       "topLevelSteps": 2,
       "fansOut": false,
@@ -599,7 +887,7 @@
         "status": "success",
         "at": "2026-08-02"
       },
-      "proof": "examples/webhook-relay.txt",
+      "proof": "demos/webhook-relay.txt",
       "preview": {
         "style": "applet",
         "statement": "Fetch JSON. Send it to a webhook."
@@ -613,8 +901,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -628,14 +916,35 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "fcfef0dedca7d769ebb21124a3ec9658e4576758277235b7a5549a8c15aba4a6"
+      "sha256": "fcfef0dedca7d769ebb21124a3ec9658e4576758277235b7a5549a8c15aba4a6",
+      "value": "Move source data to a configured receiver without a manual copy-and-paste step.",
+      "executionProfile": {
+        "inference": "none",
+        "callerReady": true
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     },
     {
       "id": "wide-fanout",
       "name": "Test fan-out limits",
       "description": "Explore per-item processing with explicit limits and truncation.",
       "file": "loops/wide-fanout.yaml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "steps": 3,
       "topLevelSteps": 2,
       "fansOut": true,
@@ -661,7 +970,7 @@
         "status": "success",
         "at": "2026-08-02"
       },
-      "proof": "examples/wide-fanout.txt",
+      "proof": "demos/wide-fanout.txt",
       "preview": {
         "style": "workflow"
       },
@@ -674,8 +983,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -689,90 +998,35 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "1db3be1ef192f74a89ad23f0b7a8eadfa465d522590fc78311a703a6a7157485"
+      "sha256": "1db3be1ef192f74a89ad23f0b7a8eadfa465d522590fc78311a703a6a7157485",
+      "value": "Verify bounded fan-out behavior before applying a workflow to a large input set.",
+      "executionProfile": {
+        "inference": "none",
+        "callerReady": true
+      },
+      "contentType": "loop-template",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "status": "reference-only",
+      "builtinDependencies": [
+        {
+          "id": "fetch",
+          "version": "1.0.0"
+        },
+        {
+          "id": "fan-out",
+          "version": "1.0.0"
+        },
+        {
+          "id": "api-request",
+          "version": "1.0.0"
+        }
+      ]
     }
   ],
   "components": [
-    {
-      "id": "api-request",
-      "name": "API request",
-      "kind": "step",
-      "description": "An outgoing request. SPEC-MANIFEST.md \u00a75.3. Without body, the last successful output is sent in an envelope {runId, templateId, payload}. A loop may end here. This is a complete loop, not an unfinished one. SPEC does not enumerate response fields.",
-      "input": {
-        "url": {
-          "type": "string",
-          "required": true,
-          "notes": "templated. SPEC-MANIFEST.md \u00a75.3."
-        },
-        "method": {
-          "type": "string",
-          "required": false,
-          "notes": "GET/POST/PUT/PATCH/DELETE. Default POST."
-        },
-        "body": {
-          "type": "string",
-          "required": false,
-          "notes": "JSON string or text. templated, deeply."
-        },
-        "headers": {
-          "type": "string",
-          "required": false,
-          "notes": "JSON string. templated."
-        },
-        "expect": {
-          "type": "string",
-          "required": false,
-          "notes": "2xx | any. Default 2xx."
-        },
-        "timeoutSec": {
-          "type": "number",
-          "required": false,
-          "notes": "Default 30."
-        }
-      },
-      "output": {
-        "response": {
-          "type": "object",
-          "notes": "SPEC-MANIFEST.md \u00a75.3 does not list output fields. The step performs the request; when it is last, the loop is complete."
-        }
-      },
-      "needsEnv": [],
-      "usedBy": [
-        "brand-mentions",
-        "budget-guard",
-        "content-factory",
-        "content-feed",
-        "feed-fanout",
-        "json-digest",
-        "price-watch",
-        "release-watch",
-        "strict-gate",
-        "webhook-relay",
-        "wide-fanout"
-      ],
-      "author": "0design",
-      "version": "1.0.0",
-      "license": "MIT",
-      "origin": {
-        "repository": "0design/QFactory.io",
-        "path": "content/registry/components/api-request.json",
-        "revision": "e453b57"
-      },
-      "engine": {
-        "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
-      },
-      "dependencies": [],
-      "permissions": {
-        "execution": "none"
-      },
-      "evidence": {
-        "status": "no-live-proof",
-        "releaseAcceptance": "pending"
-      },
-      "sha256": "a05e27501e41b1fc84853d7c20b63eedb90dcad3461c6c4450150c1d0e25a512"
-    },
     {
       "id": "approval-gate",
       "name": "Approval gate",
@@ -835,8 +1089,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -846,171 +1100,25 @@
         "status": "no-live-proof",
         "releaseAcceptance": "pending"
       },
-      "sha256": "ef49eccd8d35165c65bd733f350b9141b7045edec146c9cfb14b519fe7748a57"
+      "sha256": "ef49eccd8d35165c65bd733f350b9141b7045edec146c9cfb14b519fe7748a57",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "Human-Gate or Agent-Gate. SPEC-MANIFEST.md \u00a75.4. One kind, two modes; they differ only in who decides. reviewer: human parks the run as waiting_human. reviewer: agent is a machine check whose verdict is {pass, reason}; today that check is an LLM judge. mode: check is RESERVED and refused. A human gate is optional. Without a key the agent-gate does not wave anything through \u2014 it escalates to a human.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "builtinDependencies": []
     },
     {
-      "id": "fan-out",
-      "name": "Fan-out",
+      "id": "llm-call-openrouter",
+      "name": "llm-call/openrouter",
       "kind": "step",
-      "description": "A lane per item. SPEC-MANIFEST.md \u00a75.5. over must be exactly one placeholder resolving to an ARRAY. Mixed text returns nothing rather than guessing. If it does not resolve to an array, the step fails and says why. Each lane step sees its own item through {{item.\u2026}} and {{index}}. Truncation is never silent. Without over, the lane is inlined and runs once, and the node says so rather than pretending to expand.",
-      "input": {
-        "over": {
-          "type": "string",
-          "required": false,
-          "notes": "a single template resolving to an ARRAY, e.g. {{steps.Fetch feed.output.entries}}."
-        },
-        "maxItems": {
-          "type": "number",
-          "required": false,
-          "notes": "cap. Default 50."
-        },
-        "then": {
-          "type": "array",
-          "required": true,
-          "notes": "REQUIRED \u2014 the lane."
-        }
-      },
-      "output": {
-        "itemsFound": {
-          "type": "number",
-          "notes": "How many items the source held."
-        },
-        "itemsTaken": {
-          "type": "number",
-          "notes": "How many lanes were opened after the cap."
-        },
-        "stepsCreated": {
-          "type": "number",
-          "notes": "Lane steps created."
-        },
-        "truncated": {
-          "type": "string",
-          "notes": "A note when the cap cut the list. Never silent."
-        }
-      },
-      "needsEnv": [],
-      "usedBy": [
-        "feed-fanout",
-        "wide-fanout"
-      ],
-      "author": "0design",
-      "version": "1.0.0",
-      "license": "MIT",
-      "origin": {
-        "repository": "0design/QFactory.io",
-        "path": "content/registry/components/fan-out.json",
-        "revision": "e453b57"
-      },
-      "engine": {
-        "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
-      },
-      "dependencies": [],
-      "permissions": {
-        "execution": "none"
-      },
-      "evidence": {
-        "status": "no-live-proof",
-        "releaseAcceptance": "pending"
-      },
-      "sha256": "bd7e15f89e76f8360d2419532a2c890f7a796342cf67700d01fc7f97580163b6"
-    },
-    {
-      "id": "fetch",
-      "name": "Fetch",
-      "kind": "step",
-      "description": "Read a source. SPEC-MANIFEST.md \u00a75.1. Fails on non-2xx, on a network error, and \u2014 for format: rss \u2014 on a feed with no items. An empty feed is not a success: the steps after it expect material. The RSS reader is regex-based, not an XML parser.",
-      "input": {
-        "url": {
-          "type": "string",
-          "required": true,
-          "notes": "templated. SPEC-MANIFEST.md \u00a75.1."
-        },
-        "format": {
-          "type": "string",
-          "required": false,
-          "notes": "text | json | rss. Default text."
-        },
-        "limit": {
-          "type": "number",
-          "required": false,
-          "notes": "rss only, entries kept. Default 10."
-        },
-        "timeoutSec": {
-          "type": "number",
-          "required": false,
-          "notes": "Default 30."
-        }
-      },
-      "output": {
-        "status": {
-          "type": "number",
-          "notes": "HTTP status. Present on every format."
-        },
-        "url": {
-          "type": "string",
-          "notes": "The URL that was fetched."
-        },
-        "body": {
-          "type": "string",
-          "notes": "format: text."
-        },
-        "json": {
-          "type": "object",
-          "notes": "format: json."
-        },
-        "count": {
-          "type": "number",
-          "notes": "format: rss \u2014 number of entries kept."
-        },
-        "entries": {
-          "type": "array",
-          "notes": "format: rss \u2014 each entry is {title, link, summary, published}."
-        }
-      },
-      "needsEnv": [],
-      "usedBy": [
-        "brand-mentions",
-        "budget-guard",
-        "content-factory",
-        "content-feed",
-        "feed-fanout",
-        "json-digest",
-        "price-watch",
-        "release-watch",
-        "strict-gate",
-        "webhook-relay",
-        "wide-fanout"
-      ],
-      "author": "0design",
-      "version": "1.0.0",
-      "license": "MIT",
-      "origin": {
-        "repository": "0design/QFactory.io",
-        "path": "content/registry/components/fetch.json",
-        "revision": "e453b57"
-      },
-      "engine": {
-        "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
-      },
-      "dependencies": [],
-      "permissions": {
-        "execution": "none"
-      },
-      "evidence": {
-        "status": "no-live-proof",
-        "releaseAcceptance": "pending"
-      },
-      "sha256": "2b1f253160e925d0a2948e6669aea37da178d081741a659fb297926bce76601c"
-    },
-    {
-      "id": "llm-call",
-      "name": "LLM call",
-      "kind": "step",
-      "description": "An isolated model request. SPEC-MANIFEST.md \u00a75.2. The step's input is every prior successful output, as JSON, capped at 60 000 characters. Inside a fan-out lane, its own item comes first. No key means the step fails. There is no canned fallback. Isolated is the point \u2014 no memory of its own. agent-call is RESERVED.",
+      "description": "OpenRouter inference with an explicit model and local secret reference. This is not the current CLI agent.",
       "input": {
         "instructions": {
           "type": "string",
@@ -1058,7 +1166,8 @@
         }
       },
       "needsEnv": [
-        "OPENROUTER_API_KEY"
+        "OPENROUTER_API_KEY",
+        "OPENROUTER_MODEL"
       ],
       "usedBy": [
         "brand-mentions",
@@ -1079,8 +1188,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -1090,56 +1199,20 @@
         "status": "no-live-proof",
         "releaseAcceptance": "pending"
       },
-      "sha256": "b45602b0ca6ec6b8656198d3dbfa7d41aa53f90dbdcdf15dbf3a4ae937d95e2e"
-    },
-    {
-      "id": "schedule",
-      "name": "Schedule",
-      "kind": "trigger",
-      "description": "A trigger, not a runner step. SPEC-MANIFEST.md \u00a75.6 / \u00a73: triggers are inputs, not steps; they never appear in steps:. The runner does not act on any trigger. qloop run performs one pass; cron: documents the intended cadence, and launchd or cron actually fires it.",
-      "input": {
-        "cron": {
-          "type": "string",
-          "required": true,
-          "notes": "5 fields, UTC. Checked: field count and ranges. SPEC-MANIFEST.md \u00a73."
-        }
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
       },
-      "output": {
-        "none": {
-          "type": "null",
-          "notes": "Not a step. No runner output. Placing schedule in steps: is a validation error."
-        }
+      "file": "components/llm-call-openrouter.json",
+      "runtimeKind": "llm-call",
+      "value": "OpenRouter inference with an explicit model and local secret reference. This is not the current CLI agent.",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
       },
-      "needsEnv": [],
-      "usedBy": [
-        "brand-mentions",
-        "content-factory",
-        "content-feed",
-        "price-watch",
-        "release-watch"
-      ],
-      "author": "0design",
-      "version": "1.0.0",
-      "license": "MIT",
-      "origin": {
-        "repository": "0design/QFactory.io",
-        "path": "content/registry/components/schedule.json",
-        "revision": "e453b57"
-      },
-      "engine": {
-        "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
-      },
-      "dependencies": [],
-      "permissions": {
-        "execution": "none"
-      },
-      "evidence": {
-        "status": "no-live-proof",
-        "releaseAcceptance": "pending"
-      },
-      "sha256": "95e7ad8e07b0fbc07675e357929a484ad7b5198455bacbbf7a2bdd90712f0f22"
+      "builtinDependencies": []
     },
     {
       "id": "telegram-publish",
@@ -1184,8 +1257,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -1195,7 +1268,288 @@
         "status": "no-live-proof",
         "releaseAcceptance": "pending"
       },
-      "sha256": "581dc7a3c24e6ef9be97dd5958160ec928cbb775356797b5b3e4225cbb084f82"
+      "sha256": "581dc7a3c24e6ef9be97dd5958160ec928cbb775356797b5b3e4225cbb084f82",
+      "contentType": "component",
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "value": "A named recipe over api-request, not a new engine kind. POSTs to Telegram sendMessage with {{env.TELEGRAM_BOT_TOKEN}} and {{env.TELEGRAM_CHAT_ID}}. The runner still executes api-request (SPEC-MANIFEST.md \u00a75.3). Unset env vars do not fire a URL with braces in it \u2014 the runner writes to .qf/out/ and says so (SPEC \u00a79).",
+      "implementation": {
+        "status": "partial",
+        "source": "src/steps.mjs",
+        "limitation": "Existing runtime evidence is separate from Registry component acceptance."
+      },
+      "builtinDependencies": []
+    },
+    {
+      "id": "llm-call-cli",
+      "name": "llm-call/cli",
+      "description": "Use the current CLI agent for bounded inference without a second provider subscription.",
+      "value": "Use the current CLI agent for bounded inference without a second provider subscription.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/llm-call-cli.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "partial",
+        "source": "src/caller-inference.mjs",
+        "limitation": "Existing caller jobs support specification, files and content. A generic Registry component binding is not accepted."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "parse-web",
+      "name": "parse-web",
+      "description": "Extract source-attributed main content from a fetched web page.",
+      "value": "Extract source-attributed main content from a fetched web page.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/parse-web.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "planned",
+        "source": null,
+        "limitation": "Fetching HTML is not parsing it. Reject unsupported pages or report unknown; do not fabricate an extraction."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "determined",
+      "name": "determined",
+      "description": "Reach approved criteria with independent evidence and bounded repair.",
+      "value": "Reach approved criteria with independent evidence and bounded repair.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/determined.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [
+        {
+          "id": "workspace-apply",
+          "version": "0.1.0"
+        },
+        {
+          "id": "verify-artifact",
+          "version": "0.1.0"
+        }
+      ],
+      "implementation": {
+        "status": "partial",
+        "source": "src/determined.mjs",
+        "limitation": "Reducer exists; a composable Registry executor/verifier binding still needs acceptance."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "workspace-apply",
+      "name": "workspace-apply",
+      "description": "Apply approved changes only to explicitly allowed project files.",
+      "value": "Apply approved changes only to explicitly allowed project files.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/workspace-apply.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "partial",
+        "source": "src/workspace.mjs",
+        "limitation": "Existing SDD executor is not yet an accepted general Registry component."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "verify-artifact",
+      "name": "verify-artifact",
+      "description": "Check the exact output independently of the executor.",
+      "value": "Check the exact output independently of the executor.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/verify-artifact.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "partial",
+        "source": "src/agent.mjs",
+        "limitation": "Preserve the approved verifier and artifact binding; never rewrite checks to pass."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "deduplicate",
+      "name": "deduplicate",
+      "description": "Avoid repeating source items across feed collection runs.",
+      "value": "Avoid repeating source items across feed collection runs.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/deduplicate.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "planned",
+        "source": null,
+        "limitation": "Delivery receipts in Content are not a persistent feed cursor or content deduplication component."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "aindf-validator",
+      "name": "aindf-validator",
+      "description": "Check declared design-system rules and expose coverage gaps.",
+      "value": "Check declared design-system rules and expose coverage gaps.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/aindf-validator.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "partial",
+        "source": "src/upstream-adapters.mjs",
+        "limitation": "Native readiness and composition fixtures exist; arbitrary visual compliance remains unverified."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "unslop-canon",
+      "name": "unslop-canon",
+      "description": "Retrieve the current free canon without copying a second independent canon.",
+      "value": "Retrieve the current free canon without copying a second independent canon.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/unslop-canon.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "partial",
+        "source": "src/upstream-adapters.mjs",
+        "limitation": "Local adapter evidence does not establish the released Unslop MCP. Block acceptance until the free release."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
+    },
+    {
+      "id": "agentation",
+      "name": "Agentation",
+      "description": "Read website annotations and report verified resolutions through Agentation MCP.",
+      "value": "Turn precise website feedback into traceable changes without copying context manually.",
+      "kind": "step",
+      "contentType": "component",
+      "file": "components/agentation.json",
+      "version": "0.1.0",
+      "author": "0design",
+      "license": "MIT",
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "implementation": {
+        "status": "planned",
+        "limitation": "Live MCP binding and browser verification remain unimplemented."
+      },
+      "acceptance": {
+        "status": "pending",
+        "evidence": []
+      },
+      "needsEnv": [],
+      "builtinDependencies": []
     }
   ],
   "demos": [
@@ -1204,7 +1558,7 @@
       "loopId": "content-feed",
       "name": "Morning digest",
       "description": "Reads a feed, writes a short digest, sends it. Proof is the recorded run in the repo, not a hosted playback.",
-      "proof": "examples/content-feed.txt",
+      "proof": "demos/content-feed.txt",
       "resultUrl": null,
       "live": false,
       "measured": {
@@ -1224,8 +1578,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -1235,14 +1589,19 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "504571517a315e475b45b7fdd8ddf1e6bb1cc36ec0d251a2949d399bacd099a1"
+      "sha256": "504571517a315e475b45b7fdd8ddf1e6bb1cc36ec0d251a2949d399bacd099a1",
+      "contentType": "demo",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      }
     },
     {
       "id": "webhook-relay",
       "loopId": "webhook-relay",
       "name": "JSON webhook relay",
       "description": "Read JSON from a source and forward it to a webhook. Inspect the template and historical output, then adapt the source and destination to your task.",
-      "proof": "examples/webhook-relay.txt",
+      "proof": "demos/webhook-relay.txt",
       "resultUrl": null,
       "live": false,
       "measured": {
@@ -1262,8 +1621,8 @@
       },
       "engine": {
         "package": "qloops",
-        "version": "0.2.0-core.11",
-        "manifest": "qf.loop/v1"
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
       },
       "dependencies": [],
       "permissions": {
@@ -1273,43 +1632,79 @@
         "status": "historical-unverified",
         "releaseAcceptance": "pending"
       },
-      "sha256": "44c66c38b9790cb45b8626a3eed708bb2ea810007f67ec4f64125ed830fd70fd"
+      "sha256": "44c66c38b9790cb45b8626a3eed708bb2ea810007f67ec4f64125ed830fd70fd",
+      "contentType": "demo",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      }
+    },
+    {
+      "id": "annotation-review",
+      "loopId": "annotation-fix",
+      "name": "Annotation review queue",
+      "description": "Executable offline queue example; no live MCP, model inference or website modification.",
+      "proof": null,
+      "resultUrl": null,
+      "live": false,
+      "measured": {
+        "costUsd": 0.0007,
+        "tokensIn": 979,
+        "tokensOut": 343,
+        "status": "success",
+        "at": "2026-08-01"
+      },
+      "author": "0design",
+      "version": "1.0.0",
+      "license": "MIT",
+      "origin": {
+        "repository": "0design/QFactory.io",
+        "path": "content/registry/demos/content-feed.json",
+        "revision": "e453b57"
+      },
+      "engine": {
+        "package": "qloops",
+        "version": "0.2.0-core.13",
+        "manifest": "qloops.loop/v1"
+      },
+      "dependencies": [],
+      "permissions": {
+        "execution": "none"
+      },
+      "evidence": {
+        "status": "historical-unverified",
+        "releaseAcceptance": "pending"
+      },
+      "contentType": "demo",
+      "acceptance": {
+        "status": "pending",
+        "scope": "Registry composition and real user execution; historical output is not acceptance"
+      },
+      "file": "demos/annotation-review.json",
+      "status": "offline-demo",
+      "value": "Preserve feedback identity and expose ambiguous requests before execution."
     }
   ],
-  "releaseVersion": "2026.09.12-registry.1",
+  "releaseVersion": "2026.09.12-registry.3",
   "core": {
     "package": "qloops",
-    "version": "0.2.0-core.11",
-    "manifest": "qf.loop/v1",
+    "version": "0.2.0-core.13",
+    "manifest": "qloops.loop/v1",
     "protocol": "qf.agent/v1",
-    "contractRevision": 7,
-    "artifact": "vendor/qloops-0.2.0-core.11.tgz",
-    "artifactSha256": "2a5a38b29594a4a8eef2d928ae35548f042f200816176a549a30af1efb5851d6",
-    "integrity": "sha512-FL7QI4hwYd6uxYpAH2YjUyo0O7R38xcjw1ddv56PWYGl4d1/R+nF4X8iGEdiyTN76xRjCwOI0srgHcdaWsDVag==",
-    "schemaSha256": "83e5ef6bd729ab029fe5f57f56baecd296a65310f1f2fa5b9b12dca2c0d9a897",
+    "contractRevision": 8,
+    "artifact": "vendor/qloops-0.2.0-core.13.tgz",
+    "artifactSha256": "bb8b449e68e1657bd96ecde32722256f44529f271984d7780480ace12f0b7ae1",
+    "integrity": "sha512-zqP61x2f6f8MYVx4d6OyuLM5gROy0ucInhjcvKsUiqrAWPBULmGJGhoNnTHseZla0eaKjas6oP4Osyze5kIfRQ==",
+    "schemaSha256": "e0f8a20ea4706f1623124cf703d7312731b5f7bbd5985e4bf5bcde64371a709f",
     "requestSchemaSha256": "c57f982da1dfe61e050e9395f194e0d80da953155ce5858917ee438155c80b21",
     "status": "consumer-integration-candidate",
-    "source": "Immutable Core caller-inference candidate revision7, implementation 492c698",
+    "source": "Local manifest namespace migration candidate; user acceptance pending",
     "pending": [
       "Canonical registry publication and final coordinator acknowledgment",
       "Content-factory owner sources and Telegram receipts",
       "upstream quality release/browser acceptance",
       "coordinator release acceptance"
-    ],
-    "consumerEvidence": {
-      "date": "2026-09-10",
-      "status": "controlled-codex-proof-passed",
-      "scope": "Revision7 Site integration and controlled Codex Start, Use, Customize and Create runs passed, including repeat behavior and existing-project preservation. Assisted fail-repair-pass used an intentionally incorrect first proposal. These results do not establish arbitrary workflow, owner editorial or production acceptance.",
-      "evidenceCommits": [
-        "2030e3d",
-        "44f8a09"
-      ],
-      "remaining": [
-        "Claude Code final verification requires renewed authentication",
-        "Owner sources and delivery acceptance",
-        "Public staging and production acceptance"
-      ]
-    }
+    ]
   },
   "releaseStatus": "candidate",
   "publicationGates": [

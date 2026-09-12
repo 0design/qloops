@@ -19,7 +19,7 @@
  */
 import { copyFileSync, existsSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadManifest, validateManifest, ManifestError } from "../src/manifest.mjs";
 import { createRun, driveRun, resumeRun, resolveKnobs } from "../src/run.mjs";
@@ -93,14 +93,12 @@ function shortPath(p) {
 }
 
 function fail(message, code = EXIT_FAILED) {
-  /* stderr тут короткий і вміщається в буфер, але вихід усе одно робимо через
-     exitCode + кидок: так потік керування зупиняється, а Node дописує потоки
-     сам. Кидок ловить верхній catch, який уже нічого не додає до коду. */
+  /* Set exitCode and throw to stop control flow while Node flushes streams. */
   process.stderr.write(`${message}\n`);
   process.exitCode = code;
   throw new ExitSignal();
 }
-/** Сигнал «зупинись, код виходу вже виставлено». Не помилка. */
+/** Control-flow signal: the exit code has already been set. */
 class ExitSignal extends Error {}
 
 const VALUED_FLAGS = new Set(["section"]);
@@ -180,7 +178,7 @@ async function cmdValidate(args, flags) {
     process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
     return EXIT_OK;
   }
-  process.stdout.write(`✓ ${shortPath(file)} is a valid qf.loop/v1 manifest\n\n`);
+  process.stdout.write(`✓ ${shortPath(file)} is a valid qloops.loop/v1 manifest\n\n`);
   process.stdout.write(`${describePlan(manifest)}\n`);
   if (manifest.settings.sensitivity) {
     process.stdout.write(
@@ -453,7 +451,7 @@ async function cmdInit(args, flags) {
      person already edited — the manifest IS their work, not scaffolding. */
   if (existsSync(dest)) fail(`${shortPath(dest)} already exists — not overwriting it.`);
   if (remote) writeFileSync(dest, remote.text, "utf8");
-  else copyFileSync(join(HERE, "..", entry.file), dest);
+  else copyFileSync(join(LOOPS_DIR, basename(entry.file)), dest);
 
   process.stdout.write(`${c.bold(entry.name)}\n  → ${shortPath(dest)}\n`);
   if (remote) {
@@ -567,28 +565,13 @@ const commands = {
   doctor: cmdDoctor,
 };
 
-/**
- * ВСЕ ДИСПЕТЧЕРУВАННЯ — В ОДНІЙ ФУНКЦІЇ, І ЦЕ НЕ СТИЛЬ.
- *
- * Раніше гілки `--version` і довідки стояли на верхньому рівні модуля, де немає
- * `return`. Вони друкували своє й **не зупинялись**: далі йшов пошук команди,
- * `commands[undefined]` давав `undefined`, і `fail()` кидав ExitSignal у точці,
- * яку не накривав жоден `try` — той стояв нижче. Тобто `qloop --version`
- * друкував версію, потім довідку, потім «unknown command "undefined"», потім
- * знову довідку, потім падав стектрейсом Node і виходив з 1.
- *
- * Спіймано смоуком щойно опублікованого пакета, не читанням коду: у репозиторії
- * ця гілка виглядала виправленою, бо попередній фікс додав перевірку ПЕРЕД
- * гілкою довідки — і не додав виходу з неї.
- */
+/** Keep dispatch inside main so help/version return before command lookup. */
 async function main() {
   if (flags.has("version")) {
     process.stdout.write(`${PKG.version}\n`);
     return EXIT_OK;
   }
-  /* Попросили довідку — це не помилка виклику: 0. Запустили без нічого — це
-     помилка виклику: 64. Раніше обидва випадки давали 64, бо гілка дивилась на
-     наявність команди, а не на те, ЩО просили. */
+  /* Explicit help succeeds; a missing command is a usage error. */
   if (!command || flags.has("help") || command === "help") {
     process.stdout.write(USAGE);
     return flags.has("help") || command === "help" ? EXIT_OK : EXIT_USAGE;
@@ -607,22 +590,12 @@ async function main() {
   return code;
 }
 
-/**
- * ЧОМУ `process.exitCode`, А НЕ `process.exit()`.
- *
- * Запис у ПАЙП асинхронний. `process.exit()` одразу після `write()` рве процес
- * до того, як буфер злився, і все понад ~8 КБ зникає. Спіймано матрицею
- * прогонів: `qloop run --json` віддавав рівно 8188 байт обрізаного JSON на
- * будь-якому fan-out лупі — тобто `qloop run --json | jq` мовчки ламався, а в
- * терміналі (де stdout — TTY, а не пайп) усе виглядало правильно.
- *
- * `exitCode` лишає Node завершитись самому, коли потік справді злився.
- */
+/** Set exitCode and let Node flush pipe output; process.exit() can truncate JSON. */
 try {
   process.exitCode = await main();
 } catch (e) {
   if (e instanceof ExitSignal) {
-    /* fail() уже все сказав і виставив код. */
+    /* fail() has already reported the error and set the exit code. */
   } else if (e instanceof ManifestError) {
     process.stderr.write(`✗ ${e.message}\n`);
     process.exitCode = EXIT_FAILED;

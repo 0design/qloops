@@ -1,0 +1,14 @@
+{
+  "id": "annotation-review",
+  "loopId": "annotation-fix",
+  "contentType": "demo",
+  "value": "Preserve feedback identity and expose ambiguous requests before execution.",
+  "mode": "offline",
+  "command": "node demos/annotation-review/run.mjs",
+  "source": "demos/annotation-review/run.mjs",
+  "live": false,
+  "acceptance": {
+    "status": "pending",
+    "limitation": "Tests queue normalization only; not target loop acceptance."
+  }
+}

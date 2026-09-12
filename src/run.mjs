@@ -11,7 +11,7 @@
  *   3. execute, record output + tokens + cost
  *
  * A run that stops at a human gate is not finished and not failed: it is
- * `waiting_human`, held on disk, and `qf approve` continues it from exactly
+ * `waiting_human`, held on disk, and `qloops approve` continues it from exactly
  * there. The loop re-reads its own step list on every iteration, which is why a
  * run parked yesterday resumes today with nothing kept in memory.
  *
@@ -22,7 +22,7 @@ import { flattenLoopSteps, isExpandingFanOut, SEQ_STRIDE } from "./flatten.mjs";
 import { runFetch, runLlmCall, runApiRequest, runApprovalGate, stepLabel } from "./steps.mjs";
 import { num, str } from "./config.mjs";
 import { resolveTemplateValue } from "./template.mjs";
-import { usdForTokens, DEFAULT_MODEL } from "./cost.mjs";
+import { usdForTokens } from "./cost.mjs";
 import { RunStore, newRunId } from "./state.mjs";
 
 /** Default ceiling per run, USD. Not infinity: a run without one spends whatever
@@ -34,7 +34,7 @@ const ENGINE_KINDS = new Set(["fetch", "llm-call", "api-request", "approval-gate
 
 /** The three knobs, resolved once per run, with where each value came from. */
 export function resolveKnobs(settings = {}) {
-  const model = settings.model ?? process.env.OPENROUTER_MODEL ?? DEFAULT_MODEL;
+  const model = settings.model ?? process.env.OPENROUTER_MODEL ?? null;
   const budgetUsd =
     "budgetUsd" in settings ? settings.budgetUsd : DEFAULT_RUN_BUDGET_USD;
   return {
@@ -44,7 +44,7 @@ export function resolveKnobs(settings = {}) {
     limits: settings.limits ?? null,
     exit: settings.exit ?? { kind: "always_done" },
     provenance: {
-      model: settings.model ? "loop settings" : process.env.OPENROUTER_MODEL ? "OPENROUTER_MODEL" : "default",
+      model: settings.model ? "loop settings" : process.env.OPENROUTER_MODEL ? "OPENROUTER_MODEL" : "not configured",
       budget: "budgetUsd" in settings ? "loop settings" : "default",
     },
   };

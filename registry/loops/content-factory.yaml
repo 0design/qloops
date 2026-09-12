@@ -1,26 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# content-factory — draft, check, approve, publish.
-#
-# llm-call → agent-gate → human-gate → api-request.
-#
-# The irreversible step is LAST and sits behind TWO gates. That ordering is the
-# whole design: publishing cannot be undone, and there is no idempotency key in
-# the format, so a re-run publishes again. Everything reversible happens before
-# the gates; the one thing that is not happens after both.
-#
-# WHAT THIS LOOP DOES NOT DO: rewrite itself. The agent-gate gives ONE verdict.
-# A failed check hands the decision to a person — it does not start a
-# generate → critique → regenerate cycle, and the human gate is approve/reject,
-# not an editor: it cannot return your edits into the draft. If you want that
-# loop, it does not exist yet, and saying otherwise would be the expensive kind
-# of wrong.
-# =============================================================================
+# Turn source material into a checked draft with an explicit approval step before delivery.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: content-factory
 name: "Content factory: draft, check, approve, publish"
-version: 1.0.0
+version: 1.1.0
 description: >
   Writes a post in your channel's voice, runs it past a machine check for the
   formal rules, shows it to you, and publishes only after you say yes.
@@ -33,14 +18,9 @@ triggers:
   - kind: manual
 
 settings:
-  # A step up from haiku: this one writes something a person will read, rather
-  # than compressing something they will skim.
-  model: "anthropic/claude-haiku-4.5"
   budgetUsd: 0.40
 
 steps:
-  # The material. Point this at whatever holds today's input — the webhook a
-  # content-feed run posted to, a notes endpoint, your own API.
   - id: cf-source
     kind: fetch
     config:
@@ -66,8 +46,6 @@ steps:
 
         Plain text. No preamble, no sign-off.
 
-  # The MACHINE check. The rubric is a condition, not a wish — an agent-gate
-  # with a vague rubric passes everything and is worse than no gate at all.
   - id: cf-rules
     kind: approval-gate
     config:

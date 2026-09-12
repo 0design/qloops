@@ -1,0 +1,32 @@
+{
+  "id": "workspace-apply",
+  "name": "workspace-apply",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Apply approved changes only to explicitly allowed project files.",
+  "value": "Apply approved changes only to explicitly allowed project files.",
+  "input": {
+    "changes": {
+      "type": "object",
+      "required": true,
+      "notes": "Approved file changes and exact allowed paths."
+    }
+  },
+  "output": {
+    "artifact": {
+      "type": "object",
+      "notes": "Written file identities, revisions and hashes."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/workspace.mjs",
+    "limitation": "Existing SDD executor is not yet an accepted general Registry component."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

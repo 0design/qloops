@@ -1,0 +1,37 @@
+{
+  "id": "aindf-validator",
+  "name": "aindf-validator",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Check declared design-system rules and expose coverage gaps.",
+  "value": "Check declared design-system rules and expose coverage gaps.",
+  "input": {
+    "subject": {
+      "type": "object",
+      "required": true,
+      "notes": "Pinned DS/composition."
+    },
+    "criteria": {
+      "type": "object",
+      "required": true,
+      "notes": "Versioned upstream rules."
+    }
+  },
+  "output": {
+    "findings": {
+      "type": "object",
+      "notes": "Rule-linked findings and explicit unknown coverage."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/upstream-adapters.mjs",
+    "limitation": "Native readiness and composition fixtures exist; arbitrary visual compliance remains unverified."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

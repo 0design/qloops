@@ -1,0 +1,30 @@
+{
+  "protocolVersion": "qf.agent/v1",
+  "requestId": "fixture",
+  "loop": {
+    "id": "synthetic-sdd",
+    "version": "1.0.0"
+  },
+  "intent": "Implement addition",
+  "workspace": "/absolute/synthetic-workspace",
+  "allowedPaths": [
+    "value.mjs"
+  ],
+  "allowedTools": [
+    "/absolute/node"
+  ],
+  "provider": {
+    "kind": "caller",
+    "agent": "codex",
+    "model": "current-session",
+    "payerScope": "local-cli"
+  },
+  "deadlineMs": 90000,
+  "maxRepairAttempts": 1,
+  "verifier": {
+    "command": "/absolute/node",
+    "args": [
+      "verify.mjs"
+    ]
+  }
+}

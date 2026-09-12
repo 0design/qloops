@@ -1,6 +1,6 @@
 {
   "name": "qloops",
-  "version": "0.1.2",
+  "version": "0.2.0-core.13",
   "license": "MIT",
   "description": "Run a QFactory loop from a YAML manifest. No database, no server, no build step.",
   "type": "module",
@@ -9,12 +9,13 @@
     "qloop": "bin/qloop.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.3.0"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "catalog": "node -e \"import('./src/catalog.mjs').then(async({buildCatalog})=>{const{writeFileSync}=await import('node:fs');writeFileSync('catalog.json',JSON.stringify(buildCatalog('loops',{examplesDir:'examples'}),null,2)+'\\n')})\"",
-    "proof": "node scripts/record-proof.mjs --all"
+    "proof": "node scripts/record-proof.mjs --all",
+    "test:package": "node scripts/test-package.mjs && node scripts/test-content-package.mjs"
   },
   "files": [
     "bin/",
@@ -24,7 +25,9 @@
     "LICENSE",
     "CONTRIBUTING.md",
     "README.md",
-    "SPEC-MANIFEST.md"
+    "SPEC-MANIFEST.md",
+    "contracts/",
+    "docs/codex.md"
   ],
   "dependencies": {},
   "author": "Oleg Kukharuk",
@@ -35,5 +38,11 @@
   "bugs": {
     "url": "https://github.com/0design/qloops/issues"
   },
-  "homepage": "https://github.com/0design/qloops#readme"
+  "homepage": "https://github.com/0design/qloops#readme",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./src/*": "./src/*",
+    "./contracts/*": "./contracts/*",
+    "./package.json": "./package.json"
+  }
 }

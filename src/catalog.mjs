@@ -23,6 +23,8 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, basename, dirname } from "node:path";
 import { loadManifest } from "./manifest.mjs";
+import { loadRelease, readAsset } from "./registry-release.mjs";
+import { hash, insist } from "./contracts.mjs";
 import { flattenLoopSteps } from "./flatten.mjs";
 import { resolveKnobs } from "./run.mjs";
 import { loadRegistry, enrichComponent, enrichDemo } from "./registry.mjs";
@@ -127,50 +129,18 @@ export function describeLoop(file, { examplesDir } = {}) {
  * its own — point it at any host serving a `catalog.json` and the manifests it
  * names.
  */
-export const REMOTE_CATALOG_BASE =
-  process.env.QLOOP_CATALOG_URL?.replace(/\/+$/, "") ??
-  "https://raw.githubusercontent.com/0leg-design/qloop/main";
+export const REMOTE_CATALOG_BASE = process.env.QLOOP_CATALOG_URL?.replace(/\/+$/, "") ?? "";
 
-const REMOTE_TIMEOUT_MS = 6000;
-
-/**
- * Fetch the published catalogue.
- *
- * Returns null on ANY failure — offline, 404, garbage body. A missing remote
- * catalogue is not an error condition for the CLI: the loops that ship in the
- * package still work, and `init` falls back to saying which ids it does have.
- */
+/** Legacy discovery is explicitly configured and pinned. New consumers use
+ * qloops install, which also verifies exact dependencies and records a lock. */
 export async function fetchRemoteCatalog(base = REMOTE_CATALOG_BASE) {
-  try {
-    const res = await fetch(`${base}/catalog.json`, { signal: AbortSignal.timeout(REMOTE_TIMEOUT_MS) });
-    if (!res.ok) return null;
-    const cat = await res.json();
-    /* v2 has components and demos. A v1 remote is still a catalogue if it has
-       loops — the extra sections are optional so an older host keeps working. */
-    if (!Array.isArray(cat?.loops)) return null;
-    return {
-      ...cat,
-      components: Array.isArray(cat.components) ? cat.components : [],
-      demos: Array.isArray(cat.demos) ? cat.demos : [],
-    };
-  } catch {
-    return null;
-  }
+  if (!base) return null;
+  return loadRelease(base, process.env.QLOOP_CATALOG_SHA256);
 }
-
-/**
- * Fetch ONE manifest from the published catalogue, as TEXT.
- *
- * Deliberately does not write anything and does not parse: the caller validates
- * before the bytes ever reach disk. A manifest is not executable, but it does
- * direct network calls and model spending, so what arrives from a host is
- * checked against the schema — and shown to the person — before it is kept.
- */
 export async function fetchRemoteManifest(entry, base = REMOTE_CATALOG_BASE) {
-  const url = `${base}/${String(entry.file).replace(/^\/+/, "")}`;
-  const res = await fetch(url, { signal: AbortSignal.timeout(REMOTE_TIMEOUT_MS) });
-  if (!res.ok) throw new Error(`${url} → HTTP ${res.status}`);
-  return { text: await res.text(), url };
+  const bytes = await readAsset(base, entry.file);
+  insist(hash(bytes) === entry.sha256, "Manifest checksum mismatch", "CHECKSUM_MISMATCH");
+  return { text: bytes.toString('utf8'), url: `${base}/${entry.file}` };
 }
 
 /** Overlay from QFactory.io content/registry, else bundled loops/ (may be absent). */

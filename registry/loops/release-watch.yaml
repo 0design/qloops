@@ -1,18 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# release-watch — what shipped in the tools you depend on.
-#
-# The cheapest loop in the catalogue to try: it needs ONE credential (a model
-# key) and no account anywhere. GitHub publishes an Atom feed of releases for
-# every public repository, so this works on any project you name.
-#
-# fetch → llm-call → api-request. No human gate: nothing here is irreversible.
-# =============================================================================
+# Summarize new software releases and highlight items worth reviewing without reading the full release feed.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: release-watch
 name: "Release watch: what shipped in your dependencies"
-version: 1.0.0
+version: 1.1.0
 description: >
   Reads a project's GitHub releases feed and writes a short note on what changed
   and whether it matters to you. Works on any public repository.
@@ -20,15 +13,11 @@ owner: oleg
 enabled: true
 
 triggers:
-  # Weekly, Monday. Releases are not a daily event; a daily run would mostly
-  # tell you nothing happened, and a digest that usually says nothing stops
-  # being read.
   - kind: schedule
     cron: "0 7 * * 1"
   - kind: manual
 
 settings:
-  model: "anthropic/claude-3-haiku"
   budgetUsd: 0.10
 
 steps:
@@ -36,7 +25,6 @@ steps:
     kind: fetch
     config:
       name: "Fetch releases"
-      # Swap the owner/repo for the project you actually depend on.
       url: "{{env.QLOOP_SOURCE_URL}}"
       format: rss
       limit: "5"

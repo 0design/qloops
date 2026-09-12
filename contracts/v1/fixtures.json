@@ -1,0 +1,55 @@
+{
+  "evidenceKind": "synthetic-contract-fixtures",
+  "revision": 1,
+  "positive": {
+    "protocolVersion": "qf.agent/v1",
+    "requestId": "fixture",
+    "loop": {
+      "id": "synthetic-sdd",
+      "version": "1.0.0"
+    },
+    "intent": "Implement addition",
+    "workspace": "/absolute/synthetic-workspace",
+    "allowedPaths": [
+      "value.mjs"
+    ],
+    "allowedTools": [
+      "/absolute/node"
+    ],
+    "provider": {
+      "kind": "claude",
+      "model": "sonnet",
+      "executable": "/absolute/claude",
+      "payerScope": "local-cli"
+    },
+    "deadlineMs": 90000,
+    "maxRepairAttempts": 1,
+    "verifier": {
+      "command": "/absolute/node",
+      "args": [
+        "verify.mjs"
+      ]
+    }
+  },
+  "negativePatches": [
+    {
+      "deadlineMs": 0
+    },
+    {
+      "loop": {
+        "id": "synthetic-sdd",
+        "version": "latest"
+      }
+    },
+    {
+      "allowedPaths": [
+        "../escape"
+      ]
+    },
+    {
+      "provider": {
+        "kind": "implicit"
+      }
+    }
+  ]
+}

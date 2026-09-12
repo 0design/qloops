@@ -1,17 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# webhook-relay — луп, який не викликає модель узагалі.
-#
-# fetch → api-request. Нуль токенів і витрат на модель; зовнішні сервіси можуть мати тарифи.
-# Ключ моделі не потрібен. Цей луп показує, що `llm-call` НЕ є
-# обов'язковим кроком, так само як `approval-gate`. Луп — це послідовність
-# кроків, а не обгортка навколо моделі.
-# =============================================================================
+# Move source data to a configured receiver without a manual copy-and-paste step.
+# No model inference is required.
 
 id: webhook-relay
 name: "Webhook relay: move data, call nothing"
-version: 1.0.0
+version: 1.1.0
 description: >
   Reads a JSON endpoint and forwards it to a webhook. No model call is needed.
   Source and destination services may require credentials or charge for requests.
@@ -22,8 +16,6 @@ triggers:
   - kind: manual
 
 settings:
-  # Стеля стоїть, хоч платних кроків немає: якщо хтось допише llm-call, вона
-  # вже на місці, а не з'явиться постфактум.
   budgetUsd: 0.05
 
 steps:

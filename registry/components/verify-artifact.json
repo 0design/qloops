@@ -1,0 +1,37 @@
+{
+  "id": "verify-artifact",
+  "name": "verify-artifact",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Check the exact output independently of the executor.",
+  "value": "Check the exact output independently of the executor.",
+  "input": {
+    "artifact": {
+      "type": "object",
+      "required": true,
+      "notes": "Exact artifact revision/hash."
+    },
+    "verifier": {
+      "type": "object",
+      "required": true,
+      "notes": "Approved independent verifier."
+    }
+  },
+  "output": {
+    "evidence": {
+      "type": "object",
+      "notes": "Pass, fail or unknown for each required criterion."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/agent.mjs",
+    "limitation": "Preserve the approved verifier and artifact binding; never rewrite checks to pass."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

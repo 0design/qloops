@@ -1,4 +1,4 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
 # =============================================================================
 # PARITY CASE B — when the gate IS there, it actually holds.

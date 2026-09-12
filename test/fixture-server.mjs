@@ -1,36 +1,8 @@
 #!/usr/bin/env node
-/**
- * Тестовий полігон для прогонів лупів.
- *
- * Луп торкається зовнішнього світу рівно у двох місцях — `fetch` і
- * `api-request`. Щоб прогін щось доводив, обидва мають бути КЕРОВАНІ: не «якась
- * стрічка в інтернеті», а джерело, якому можна наказати впасти, віддати сміття
- * або мовчати до таймауту. Інакше червоний тест означає «хтось чужий лежить», а
- * не «луп поводиться неправильно».
- *
- *   node test/fixture-server.mjs [--port 19900]
- *
- * ДЖЕРЕЛА (GET)
- *   /feed/ok           RSS на 8 записів
- *   /feed/one          RSS на 1 запис — межа для fan-out
- *   /feed/empty        валідний RSS БЕЗ <item> — крок має впасти, не «успішно нічого»
- *   /feed/malformed    HTML замість RSS
- *   /feed/huge         RSS на 60 записів — перевірка обрізання
- *   /json/ok           {"rates":{"UAH":44.6},"ok":true}
- *   /json/low          {"rates":{"UAH":38.1}} — agent-gate має НЕ пропустити
- *   /json/notjson      text/plain, не JSON
- *   /material          матеріал для content-factory
- *   /slow              відповідає через 40с — довше за будь-який timeoutSec
- *   /status/:code      будь-який HTTP-код на замовлення
- *
- * ПРИЙМАЧІ (POST)
- *   /sink              201, тіло записується
- *   /sink/reject       500 — приймач живий, але відмовляє
- *   /sink/slow         відповідає через 40с
- *
- * ІНСПЕКЦІЯ
- *   GET  /_received    усе, що приймачі отримали
- *   POST /_reset       очистити
+/** Controlled HTTP fixtures for loop tests.
+ * Sources cover valid, empty, malformed, oversized, slow and failed responses.
+ * Receivers record accepted and rejected attempts for independent assertions.
+ * Inspect /_received and reset through /_reset.
  */
 import { createServer } from "node:http";
 
@@ -50,8 +22,7 @@ const rss = (n) =>
 const ROUTES = {
   "/feed/ok": () => [200, "application/rss+xml", rss(8)],
   "/feed/one": () => [200, "application/rss+xml", rss(1)],
-  /* Валідний RSS без записів: доводить, що порожня стрічка — це ПОМИЛКА кроку,
-     а не тихий успіх над порожнечею. */
+  /* Empty RSS must fail instead of silently passing with no items. */
   "/feed/empty": () => [200, "application/rss+xml", `<?xml version="1.0"?>\n<rss version="2.0"><channel><title>Empty</title></channel></rss>`],
   "/feed/malformed": () => [200, "text/html", "<html><body><h1>Not a feed</h1></body></html>"],
   "/feed/huge": () => [200, "application/rss+xml", rss(60)],
@@ -84,8 +55,7 @@ createServer((req, res) => {
   req.on("end", async () => {
     const body = Buffer.concat(chunks).toString("utf8");
 
-    /* Повільні маршрути ніколи не відповідають у межах будь-якого розумного
-       timeoutSec — так таймаут перевіряється, а не імітується sleep-ом у тесті. */
+    /* Slow endpoints exceed the configured timeout to exercise real cancellation. */
     if (path === "/slow" || path === "/sink/slow") {
       await new Promise((r) => setTimeout(r, 40_000));
       res.writeHead(200); return res.end("late");

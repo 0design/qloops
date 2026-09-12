@@ -1,0 +1,41 @@
+{
+  "id": "deduplicate",
+  "name": "deduplicate",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Avoid repeating source items across feed collection runs.",
+  "value": "Avoid repeating source items across feed collection runs.",
+  "input": {
+    "items": {
+      "type": "object",
+      "required": true,
+      "notes": "Normalized items with canonical identity."
+    },
+    "cursor": {
+      "type": "object",
+      "required": true,
+      "notes": "Previously processed identities."
+    }
+  },
+  "output": {
+    "items": {
+      "type": "object",
+      "notes": "New items only."
+    },
+    "cursor": {
+      "type": "object",
+      "notes": "Updated cursor after successful persistence."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "planned",
+    "source": null,
+    "limitation": "Delivery receipts in Content are not a persistent feed cursor or content deduplication component."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

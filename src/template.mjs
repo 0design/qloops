@@ -114,7 +114,7 @@ export function missingEnvRefs(text) {
 
 /**
  * Resolve to a VALUE, not a string — fan-out needs the real array, not its JSON
- * text. Works only when the string is EXACTLY one placeholder; "Список: {{…}}"
+ * text. Works only when the string is EXACTLY one placeholder; "List: {{…}}"
  * returns undefined rather than guessing what the mixed text was meant to be.
  */
 export function resolveTemplateValue(text, ctx) {

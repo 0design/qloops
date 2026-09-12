@@ -1,19 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# budget-guard — стеля, яка ріже.
-#
-# `budgetUsd: 0` з платним кроком посередині. Ран мусить упасти НА llm-call,
-# назвати причиною бюджет і НЕ надіслати нічого. Це не приклад для копіювання —
-# це виконуваний доказ, що стеля перевіряється ПЕРЕД витратою, а не після.
-#
-# Тримати такий луп у каталозі корисно: він ламається за визначенням, і якщо
-# колись перестане ламатись — щось поїхало в бюджетній ручці.
-# =============================================================================
+# Check how a configured spending limit stops a model-backed workflow before using it on real work.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: budget-guard
 name: "Budget guard: proof the ceiling cuts first"
-version: 1.0.0
+version: 1.1.0
 description: >
   Deliberately impossible: a zero ceiling in front of a paid step. The run must
   stop at the model call, name the budget, and send nothing.
@@ -24,7 +16,6 @@ triggers:
   - kind: manual
 
 settings:
-  model: "anthropic/claude-3-haiku"
   budgetUsd: 0
 
 steps:

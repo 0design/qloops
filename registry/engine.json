@@ -1,0 +1,85 @@
+{
+  "package": "qloops",
+  "version": "0.2.0-core.13",
+  "contractRevision": 8,
+  "download": "downloads/qloops-0.2.0-core.13.tgz",
+  "sha256": "bb8b449e68e1657bd96ecde32722256f44529f271984d7780480ace12f0b7ae1",
+  "status": "consumer-integration-candidate",
+  "documents": [
+    {
+      "file": "README.md",
+      "url": "registry/core/README.md",
+      "sha256": "2b34268d5f4ffcfc8c3a95d84de8ffe4a4107044eba1ea30927ba9a207f80a87"
+    },
+    {
+      "file": "SPEC-MANIFEST.md",
+      "url": "registry/core/SPEC-MANIFEST.md",
+      "sha256": "e0f8a20ea4706f1623124cf703d7312731b5f7bbd5985e4bf5bcde64371a709f"
+    },
+    {
+      "file": "contracts/v1/README.md",
+      "url": "registry/core/contracts/v1/README.md",
+      "sha256": "e010c68b7d30919f2dd8722fc3279d0f6161e0ec494ad2cc0e49ea5850ea3072"
+    },
+    {
+      "file": "contracts/v1/request.schema.json",
+      "url": "registry/core/contracts/v1/request.schema.json",
+      "sha256": "c57f982da1dfe61e050e9395f194e0d80da953155ce5858917ee438155c80b21"
+    },
+    {
+      "file": "contracts/v1/result.schema.json",
+      "url": "registry/core/contracts/v1/result.schema.json",
+      "sha256": "cde9da43d783c4d02e693746706b0fa598d0145cdecac3f16f408b9f19c07555"
+    },
+    {
+      "file": "contracts/v1/specification.md",
+      "url": "registry/core/contracts/v1/specification.md",
+      "sha256": "36484a133db05aedb9f5986ad515c0637900acbe119fc695a3667b9389052216"
+    },
+    {
+      "file": "contracts/v1/codex-request.json",
+      "url": "registry/core/contracts/v1/codex-request.json",
+      "sha256": "6027f8d497c43fb4b250949f59f3535ff6f348d8b25647130adebaa6168af87b"
+    },
+    {
+      "file": "contracts/v1/registry.md",
+      "url": "registry/core/contracts/v1/registry.md",
+      "sha256": "c197125328e6ce2e822770897c11627bdc07b0ea38ab6822b64ef493ab98751b"
+    },
+    {
+      "file": "contracts/v1/determined.md",
+      "url": "registry/core/contracts/v1/determined.md",
+      "sha256": "0513139591378676e6ab39193b53a185f25bd6c866aea5fb43505b4c0aa97d97"
+    },
+    {
+      "file": "contracts/v1/quality.md",
+      "url": "registry/core/contracts/v1/quality.md",
+      "sha256": "93b27d5ac16d7e78be0a01a46a78cd07464e28a414d4a0b3abf9f9c145af36bd"
+    },
+    {
+      "file": "contracts/v1/content.md",
+      "url": "registry/core/contracts/v1/content.md",
+      "sha256": "5a0a9ac80a114d8b7b24298edbf2c4ab4a709022778643c605c6884c0fb33c9e"
+    },
+    {
+      "file": "examples/content-request.json",
+      "url": "registry/core/examples/content-request.json",
+      "sha256": "0be14b4d702667e4827b2490454e8e44f14e685c5fdee885e3bfb71df4ab11be"
+    },
+    {
+      "file": "contracts/v1/caller-inference.md",
+      "url": "registry/core/contracts/v1/caller-inference.md",
+      "sha256": "380f96e80751044f4d40524ffaa0f8503e931ad37f6615531c7c3f21984f5c36"
+    },
+    {
+      "file": "examples/caller-request.json",
+      "url": "registry/core/examples/caller-request.json",
+      "sha256": "205d4d551a88e47049a3cc38844d7051597687bab7b1b69bbcbae4fdd35a1ec8"
+    },
+    {
+      "file": "examples/caller-content-request.json",
+      "url": "registry/core/examples/caller-content-request.json",
+      "sha256": "562b789460dc547d359d9410c0e3344a2e9c99e175a0b4bebb38679130c85b77"
+    }
+  ]
+}

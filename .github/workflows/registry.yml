@@ -1,10 +1,10 @@
 name: Registry
 on:
   pull_request:
-    paths: ['registry/**', 'scripts/build-registry.mjs', '.github/workflows/registry.yml']
+    paths: ['registry/**', 'scripts/build-registry.mjs', 'scripts/registry-readiness.mjs', '.github/workflows/registry.yml']
   push:
     branches: [main, codex/shared-registry]
-    paths: ['registry/**', 'scripts/build-registry.mjs', '.github/workflows/registry.yml']
+    paths: ['registry/**', 'scripts/build-registry.mjs', 'scripts/registry-readiness.mjs', '.github/workflows/registry.yml']
 permissions:
   contents: read
 jobs:

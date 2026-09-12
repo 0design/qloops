@@ -3,7 +3,7 @@
   "loopId": "webhook-relay",
   "name": "Move data, call nothing",
   "description": "Reads a JSON endpoint and forwards it. No model call is needed; source and destination services may require credentials or charge for requests. Proof that a loop is a sequence of steps, not a wrapper for an LLM.",
-  "proof": "examples/webhook-relay.txt",
+  "proof": "demos/webhook-relay.txt",
   "resultUrl": null,
   "live": false
 }

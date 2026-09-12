@@ -22,12 +22,12 @@ import { readFileSync } from "node:fs";
 import { parseYaml, YamlError } from "./yaml.mjs";
 
 /** The format tag every manifest must carry, verbatim. */
-export const MANIFEST_TAG = "qf.loop/v1";
+export const MANIFEST_TAG = "qloops.loop/v1";
 
 /** Step kinds the engine executes. */
 export const ENGINE_KINDS = ["fetch", "llm-call", "api-request", "approval-gate", "fan-out"];
 
-/** Trigger kinds — входи, not steps. `schedule` is one of these, not a runner. */
+/** Trigger kinds — entry points, not steps. `schedule` is one of these, not a runner. */
 export const TRIGGER_KINDS = ["schedule", "manual", "webhook", "signal", "intent-input", "loop-input", "event"];
 
 /** Reserved in the format, deliberately NOT implemented (owner decision 2026-08-01). */
@@ -115,7 +115,7 @@ function validateStep(raw, path, seenIds) {
     step.then = raw.then.map((s, i) => validateStep(s, `${path}.then[${i}]`, seenIds));
   }
 
-  /* Per-kind requirements. Checked at validate time so `qf validate` is worth
+  /* Per-kind requirements. Checked at validate time so `qloops validate` is worth
      running: a missing url should not be discovered halfway through a paid run. */
   if (kind === "fetch" && !config.url) {
     throw new ManifestError('a fetch step needs "config.url"', `${path}.config`);
@@ -260,7 +260,7 @@ export function validateManifest(doc) {
   if (tag !== MANIFEST_TAG) {
     const [family, ver] = String(tag).split("/");
     throw new ManifestError(
-      family === "qf.loop"
+      family === "qloops.loop"
         ? `this runner reads ${MANIFEST_TAG}; the manifest declares ${tag}. Version "${ver}" is either older or newer than this build`
         : `unknown manifest family "${tag}" — expected ${MANIFEST_TAG}`,
       "manifest",

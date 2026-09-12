@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, cpSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { buildRegistry } from '../scripts/build-registry.mjs';
+import { installPinned } from '../src/registry-release.mjs';
+import { hash } from '../src/contracts.mjs';
+
+test('shared registry export installs through Core and rejects unreviewed metadata', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'registry-build-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  cpSync(new URL('../registry', import.meta.url), dir, { recursive: true });
+  const { catalog } = buildRegistry(dir);
+  assert.ok(catalog.loops.length > 0);
+  assert.ok([...catalog.loops, ...catalog.components, ...catalog.demos].every(entry => entry.license === 'MIT'));
+  const bytes = JSON.stringify(catalog);
+  writeFileSync(join(dir, 'catalog.json'), bytes);
+  await installPinned({ base: dir, catalogSha256: hash(bytes), id: 'webhook-relay', version: '1.1.0', destination: join(dir, 'installed.yaml') });
+  const sourcePath = join(dir, 'catalog.source.json');
+  const source = JSON.parse(readFileSync(sourcePath));
+  const value = source.loops[0].value;
+  delete source.loops[0].value;
+  writeFileSync(sourcePath, JSON.stringify(source));
+  assert.throws(() => buildRegistry(dir), /Loop value/);
+  source.loops[0].value = value;
+  source.loops[0].license = 'LicenseRef-Pending';
+  writeFileSync(sourcePath, JSON.stringify(source));
+  assert.throws(() => buildRegistry(dir), /license/);
+  source.loops[0].license = 'MIT';
+  source.loops[0].file = '../package.json';
+  writeFileSync(sourcePath, JSON.stringify(source));
+  assert.throws(() => buildRegistry(dir), /Unsafe/);
+});

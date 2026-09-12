@@ -1,16 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# json-digest — модель, яка мусить віддати JSON, а не прозу.
-#
-# `format: json` на llm-call — окремий шлях у двигуні: відповідь парситься, і
-# якщо це не JSON, крок ПАДАЄ, а не їде далі з текстом. Жоден інший луп у
-# каталозі цього шляху не проходить, тож без нього він не перевірявся ніколи.
-# =============================================================================
+# Produce a structured summary that a downstream service can consume without manual reformatting.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: json-digest
 name: "JSON digest: structured output or nothing"
-version: 1.0.0
+version: 1.1.0
 description: >
   Asks the model for strict JSON and refuses the step when it gets prose.
   Covers the format:json path, where a wrong answer fails instead of leaking on.
@@ -21,7 +16,6 @@ triggers:
   - kind: manual
 
 settings:
-  model: "anthropic/claude-3-haiku"
   budgetUsd: 0.10
 
 steps:

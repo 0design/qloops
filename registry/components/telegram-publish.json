@@ -5,7 +5,7 @@
   "builtFrom": [
     "api-request"
   ],
-  "description": "A named recipe over api-request, not a new engine kind. POSTs to Telegram sendMessage with {{env.TELEGRAM_BOT_TOKEN}} and {{env.TELEGRAM_CHAT_ID}}. The runner still executes api-request (SPEC-MANIFEST.md §5.3). Unset env vars do not fire a URL with braces in it — the runner writes to .qf/out/ and says so (SPEC §9).",
+  "description": "A named recipe over api-request, not a new engine kind. POSTs to Telegram sendMessage with {{env.TELEGRAM_BOT_TOKEN}} and {{env.TELEGRAM_CHAT_ID}}. The runner still executes api-request (SPEC-MANIFEST.md \u00a75.3). Unset env vars do not fire a URL with braces in it \u2014 the runner writes to .qf/out/ and says so (SPEC \u00a79).",
   "input": {
     "text": {
       "type": "string",
@@ -20,12 +20,18 @@
     },
     "chatId": {
       "type": "string",
-      "notes": "Optional. The chat that was addressed. Not an engine field — the request body carries chat_id."
+      "notes": "Optional. The chat that was addressed. Not an engine field \u2014 the request body carries chat_id."
     }
   },
   "needsEnv": [
     "TELEGRAM_BOT_TOKEN",
     "TELEGRAM_CHAT_ID"
   ],
-  "usedBy": []
+  "usedBy": [],
+  "contentType": "component",
+  "value": "A named recipe over api-request, not a new engine kind. POSTs to Telegram sendMessage with {{env.TELEGRAM_BOT_TOKEN}} and {{env.TELEGRAM_CHAT_ID}}. The runner still executes api-request (SPEC-MANIFEST.md \u00a75.3). Unset env vars do not fire a URL with braces in it \u2014 the runner writes to .qf/out/ and says so (SPEC \u00a79).",
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  }
 }

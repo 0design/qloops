@@ -1,0 +1,37 @@
+{
+  "id": "parse-web",
+  "name": "parse-web",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Extract source-attributed main content from a fetched web page.",
+  "value": "Extract source-attributed main content from a fetched web page.",
+  "input": {
+    "html": {
+      "type": "string",
+      "required": true,
+      "notes": "Fetched HTML bytes."
+    },
+    "sourceUrl": {
+      "type": "string",
+      "required": true,
+      "notes": "Original source URL."
+    }
+  },
+  "output": {
+    "document": {
+      "type": "object",
+      "notes": "Title, main text, canonical URL and extraction diagnostics."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "planned",
+    "source": null,
+    "limitation": "Fetching HTML is not parsing it. Reject unsupported pages or report unknown; do not fabricate an extraction."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

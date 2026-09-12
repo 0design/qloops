@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qf.agent/v1/result",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "requestId",
+    "runId",
+    "status",
+    "summary",
+    "artifacts",
+    "evidence",
+    "error",
+    "nextAction",
+    "provider",
+    "usage"
+  ],
+  "properties": {
+    "protocolVersion": {
+      "const": "qf.agent/v1"
+    },
+    "status": {
+      "enum": [
+        "success",
+        "failed",
+        "needs_human",
+        "cancelled"
+      ]
+    },
+    "requestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "error": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "nextAction": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "provider": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "usage": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

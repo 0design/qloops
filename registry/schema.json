@@ -1,0 +1,336 @@
+{
+  "version": "0.2.0-core.13",
+  "manifest": "qloops.loop/v1",
+  "format": "markdown",
+  "body": "# SPEC-MANIFEST — `qloops.loop/v1`\n\nThe file format a loop is written in, and exactly what the runner does with each\nfield.\n\n**One rule governs this document: nothing is described here that the engine does\nnot do.** Anything reserved for later is marked `RESERVED` and is *refused* at\nvalidation rather than accepted and ignored — a manifest that claims a behaviour\nwhich will not happen is worse than one that fails to load.\n\n---\n\n## 1. Syntax\n\nManifests are YAML, read by a documented **subset** (`src/yaml.mjs`). The subset\nexists so the runner has zero dependencies and works on a machine with nothing\ninstalled.\n\nSupported: block mappings and sequences; `plain`, `'single'` and `\"double\"`\nscalars; block scalars `|` and `>` with `-`/`+` chomping; flow collections\n`[a, b]` and `{a: 1}`, nested; comments; one leading `---`.\n\nTypes: `true`/`false`, `null`/`~`, integers, floats. **Anything quoted is always a\nstring** — `maxItems: \"3\"` and `maxItems: 3` both reach the engine as `\"3\"`.\n\nRefused, with the line number: anchors `&a`, aliases `*a`, tags `!!str`, more\nthan one document per file, tab indentation, duplicate keys.\n\n---\n\n## 2. Top level\n\n```yaml\nmanifest: qloops.loop/v1      # REQUIRED, verbatim\nid: content-feed          # REQUIRED — names the loop in state and logs\nname: \"Morning digest\"    # defaults to id\nversion: 1.0.0            # free-form\ndescription: >            # free-form\n  What this loop is for.\nowner: oleg               # free-form\nenabled: true             # false ⇒ `qloop run` does nothing and says so\ntriggers: [...]           # §3\nsettings: {...}           # §4\nsteps: [...]              # REQUIRED, at least one — §5\n```\n\n`manifest:` is required so this file can be told apart from any other YAML, and\nso the format can be versioned later. A different version is named in the error,\nnever guessed at.\n\n---\n\n## 3. Triggers\n\nTriggers are **inputs, not steps**. They never appear in `steps:`; putting one\nthere is a validation error with the fix in the message. Materialising a trigger\nas a step run would begin every run with a step that does nothing and always\nsucceeds — noise somebody later reads as work.\n\n```yaml\ntriggers:\n  - kind: schedule\n    cron: \"0 7 * * *\"     # 5 fields, UTC. Checked: field count and ranges.\n  - kind: manual\n```\n\nKinds: `schedule` · `manual` · `webhook` · `signal` · `intent-input` ·\n`loop-input` · `event`.\n\n**The runner does not act on any of them.** `qloop run` performs one pass; `cron:`\ndocuments the intended cadence, and launchd or cron actually fires it (README\n§Scheduling). In the product, the scheduler is what reads these.\n\n---\n\n## 4. Settings — the three knobs\n\n```yaml\nsettings:\n  model: \"anthropic/claude-3-haiku\"\n  budgetUsd: 0.10\n  limits:\n    daily: { runs: 2, budgetUsd: 0.60 }\n  exit:\n    kind: always_done\n```\n\n### 4.1 Model (knob 2)\n\nPrecedence, strongest first: a step's own `config.model` → `settings.model` →\n`OPENROUTER_MODEL`. No model is selected implicitly. A model-backed YAML step\nrequires an explicit OpenRouter model; it does not use CLI caller inference.\n`qloop validate` reports the selected model or an unconfigured value.\n\n### 4.2 Budget (knob 3)\n\nUSD per run, **forced**, and checked **before** each paid step (`llm-call`,\n`approval-gate`) — never after. A ceiling verified afterwards is not a ceiling,\nit is a report of an overrun. When it cuts, the step fails with\n`gateReason: budget` and the run stops; nothing further is sent.\n\nThree distinct states, and they mean different things:\n\n| | |\n|---|---|\n| absent | take the documented default, **$1.00** |\n| `budgetUsd: 0.10` | that ceiling |\n| `budgetUsd: null` | no ceiling, **lifted on purpose** |\n\nThe rate is the same table the product bills on (`src/cost.mjs`), so a manifest\ncosts the same in both homes.\n\n### 4.3 Sensitivity (knob 1) — REFUSED by this runner\n\n`settings.sensitivity` is part of the format and the product implements it. **The\nlocal runner refuses a manifest that sets one** rather than run it with the knob\nignored: the profile exists to hold back irreversible and outbound steps, so\nignoring it would carry them out. Run such a loop in the product, or remove the\nprofile.\n\n### 4.4 Windowed limits · exit criteria\n\n`limits` (daily / weekly / monthly caps on runs and spend) and `exit` are\nvalidated for shape and carried through to the product, which enforces them.\n**The local runner does not enforce `limits`** — it has no cross-run ledger to\ncount against. `qloop validate` says so on the line where it prints them.\n\n---\n\n## 5. Steps\n\n```yaml\nsteps:\n  - id: cf-fetch          # REQUIRED, unique — outputs are addressed by id\n    kind: fetch           # REQUIRED\n    config:               # scalars only; every value reaches the engine as a string\n      name: \"Fetch feed\"  # the human label, used in output and in templates\n      url: \"https://…\"\n    then: [...]           # only meaningful on fan-out\n```\n\n`config` holds **scalars only**. Nested structure travels as a JSON *string* on\none line — `body: '{\"a\":1}'` — because that is how the database stores it. A\nnested mapping is a validation error that says this.\n\n### 5.1 `fetch` — read a source\n\n| field | | |\n|---|---|---|\n| `url` | REQUIRED | templated |\n| `format` | `text` \\| `json` \\| `rss` | default `text` |\n| `limit` | rss only, entries kept | default 10 |\n| `timeoutSec` | | default 30 |\n\nOutput: `{status, url, body}` · `{status, url, json}` · `{status, url, count, entries[]}`\nwhere each entry is `{title, link, summary, published}`.\n\nFails on non-2xx, on a network error, and — for `format: rss` — on a feed with no\nitems. An empty feed is not a success: the steps after it expect material.\n\nThe RSS reader is regex-based, not an XML parser. It handles CDATA, `<item>` and\n`<entry>`; it does not handle nested same-name tags or namespace prefixes.\n\n### 5.2 `llm-call` — an isolated model request\n\n| field | | |\n|---|---|---|\n| `instructions` | REQUIRED | templated |\n| `format` | `text` \\| `json` | default `text` |\n| `maxTokens` | | default 1200 |\n| `temperature` | | default 0.3 |\n| `role` | prepended as \"You are the ⟨role⟩ agent…\" | |\n| `model` | overrides the loop's model | |\n\nThe step's **input is every prior successful output**, as JSON, capped at 60 000\ncharacters. Inside a fan-out lane, its own item comes first.\n\nOutput: `{text, model}`, or the parsed object when `format: json`.\n\n**No key means the step fails.** There is no canned fallback: invented text would\ntravel down the chain and out through the next request as if it were real.\n\n*Isolated* is the point — no memory of its own. `agent-call` (a call to an agent\n**with** its own context) is `RESERVED`.\n\n### 5.3 `api-request` — an outgoing request\n\n| field | | |\n|---|---|---|\n| `url` | REQUIRED | templated |\n| `method` | GET/POST/PUT/PATCH/DELETE | default POST |\n| `body` | JSON string or text | templated, deeply |\n| `headers` | JSON string | templated |\n| `expect` | `2xx` \\| `any` | default `2xx` |\n| `timeoutSec` | | default 30 |\n\nWithout `body`, the last successful output is sent in an envelope\n`{runId, templateId, payload}` — a receiver has to know which run and which loop\nsent a thing.\n\n**A loop may end here.** This is a complete loop, not an unfinished one.\n\n### 5.4 `approval-gate` — Human-Gate or Agent-Gate\n\nOne kind, two modes; they differ only in *who* decides.\n\n| field | | |\n|---|---|---|\n| `reviewer` | `human` \\| `agent` | default `human` |\n| `anchor` | what is being decided about | |\n| `rubric` | REQUIRED when `reviewer: agent` | |\n| `escalateOn` | `objection` hands a failed check to a person | default `objection` |\n| `mode` | `check` is `RESERVED` — refused | |\n\n**`reviewer: human`** parks the run as `waiting_human`. `qloop approve` continues it,\n`--reject` fails it. **A human gate is optional** — nothing in the format or the\nengine assumes a run must meet a person.\n\n**`reviewer: agent`** is a machine check whose verdict is `{pass, reason}`.\nToday that check is an LLM judge; `mode: check` (a real, non-model checker) is\nreserved and a manifest claiming it is refused. Without a key the gate does\n**not** wave anything through — it escalates to a human, because a check that\nreports \"fine\" when its tool was missing leaves a record of a check that never\nhappened.\n\n### 5.5 `fan-out` — a lane per item\n\n| field | | |\n|---|---|---|\n| `over` | a single template resolving to an ARRAY | |\n| `maxItems` | cap | default 50 |\n| `then` | REQUIRED — the lane | |\n\n`over` must be exactly one placeholder, e.g.\n`{{steps.Fetch feed.output.entries}}`. Mixed text returns nothing rather than\nguessing. If it does not resolve to an array, the step fails and says why — a\nsilent zero would hide a configuration error as an empty feed.\n\nEach lane step sees **its own** item through `{{item.…}}` and `{{index}}`.\n\n**Truncation is never silent.** The node's output carries `itemsFound`,\n`itemsTaken`, `stepsCreated` and a `truncated` note.\n\nWithout `over`, the lane is inlined and runs **once**, and the node says so\nrather than pretending to expand.\n\n### 5.6 `schedule` — a trigger, not a step\n\nSee §3. Placing it in `steps:` is a validation error.\n\n---\n\n## 6. Templates\n\nResolved inside `url`, `body`, `headers`, `instructions` and `over`.\n\n| | |\n|---|---|\n| `{{steps.<id or name>.output.<path>}}` | a prior step's output; the name match is case-insensitive and **may contain spaces** |\n| `{{item}}` · `{{item.title}}` | the current item, inside a fan-out lane |\n| `{{index}}` | 0-based lane position |\n| `{{env.NAME}}` | an environment variable; `UPPER_SNAKE` only |\n\n**An unresolved placeholder is left in place, verbatim.** Literal `{{…}}`\narriving at a receiver is a visible failure; an empty string is a silent one.\n\n`{{env.…}}` exists so a manifest never carries a secret. A manifest is a file\nthat goes into git — \"share the loop\" must not mean \"share the bot token\".\n\n---\n\n## 7. Errors, retries, partial runs\n\n- A failed step **stops the run**. `.qf/last-run.json` records the status, the\n  reason and the failing step; the process exits non-zero.\n- **Fixed runtime retries, not manifest-configurable.** Fetch, model and API\n  requests retry transient network/timeout/429/5xx failures twice, with 1.5s/4s\n  backoff. Other 4xx fail immediately. Exhaustion remains a failure. Body parsing\n  failures are not retried. Explicit transport cancellation does not retry.\n- **No idempotency key.** A retry after an ambiguous response or a re-run can\n  repeat outgoing writes. Publishing requires receiver de-duplication; this\n  runtime does not promise exactly-once delivery.\n- **No `continue_on_error` / `optional`.** One unreachable source fails the run.\n  This is a known cost, not an oversight.\n- A run parked at a gate is neither failed nor finished: it is held on disk and\n  `qloop approve` resumes it from exactly there.\n\n---\n\n## 8. Memory\n\nThere is none, between runs. No cursor, no \"last seen\", nowhere to put one. A\nfeed loop sends what the feed holds now. Claiming otherwise would be the most\nexpensive kind of wrong.\n\n---\n\n## 9. Divergences\n\nThe runner and the product engine execute the same manifest identically, and a\nparity test (`scripts/loop-parity.ts`) enforces that across four cases: a loop\nwith no human, a gate that holds, a budget that cuts, and a fan-out lane per\nitem.\n\n**On an unset `{{env.X}}` in a URL, neither home fires the request** (owner\ndecision, 2026-08-02). They differ only in what they do instead:\n\n| | |\n|---|---|\n| engine | the step **fails**, naming the variable: \"TELEGRAM_BOT_TOKEN is not set … the missing value is a secret, not a broken endpoint\" |\n| runner | the payload goes to `.qf/out/<runId>.txt`, the run continues, and the CLI says `⚠ NOT SENT` |\n\nBoth refuse to send blind. The runner's file sink exists so a loop can be proven\nend to end **before** its real receiver has credentials — which is the whole\npoint of running it locally. Before this was aligned, the engine posted to a URL\nwith braces still in it and read back a 404, i.e. it reported \"no such bot\" when\nthe truth was \"no token in the environment\" — two different problems needing two\ndifferent fixes.\n\n**What the runner does not enforce at all:** `settings.sensitivity` (refused\noutright) and `settings.limits` (validated, not counted — there is no cross-run\nledger locally). The product enforces both.\n\n---\n\n## 10. Versioning\n\n`manifest: qloops.loop/v1` is the contract. Within `v1`, fields may be **added**;\nnothing that exists is repurposed or removed. A runner meeting a version it does\nnot read says so by name instead of trying its luck.\n\n`RESERVED` fields — `agent-call`, `agent-gate mode: check` — are refused today\nprecisely so that implementing them later cannot break a manifest that was\nwritten against this document.\n",
+  "agent": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "qf.agent/v1/request",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "protocolVersion",
+      "requestId",
+      "loop",
+      "intent",
+      "workspace",
+      "allowedPaths",
+      "allowedTools",
+      "provider",
+      "deadlineMs",
+      "maxRepairAttempts",
+      "verifier"
+    ],
+    "properties": {
+      "protocolVersion": {
+        "const": "qf.agent/v1"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[\\w-]{1,100}$"
+      },
+      "loop": {
+        "type": "object",
+        "required": [
+          "id",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "synthetic-sdd",
+              "sdd-pipeline"
+            ]
+          },
+          "version": {
+            "const": "1.0.0"
+          }
+        }
+      },
+      "intent": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 32000
+      },
+      "workspace": {
+        "type": "string",
+        "description": "Absolute trusted local directory"
+      },
+      "allowedPaths": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 100,
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      },
+      "allowedTools": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "provider": {
+        "type": "object",
+        "required": [
+          "kind",
+          "model",
+          "payerScope"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "claude",
+              "codex",
+              "openrouter",
+              "caller"
+            ]
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payerScope": {
+            "enum": [
+              "local-cli",
+              "local-byok"
+            ]
+          },
+          "executable": {
+            "type": "string"
+          },
+          "keyRef": {
+            "type": "string"
+          },
+          "agent": {
+            "enum": [
+              "codex",
+              "claude"
+            ]
+          }
+        }
+      },
+      "deadlineMs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 300000
+      },
+      "maxRepairAttempts": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5
+      },
+      "verifier": {
+        "type": "object",
+        "required": [
+          "command",
+          "args"
+        ],
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "approval": {
+        "type": "object",
+        "required": [
+          "hash",
+          "decision"
+        ],
+        "properties": {
+          "hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          }
+        }
+      },
+      "resumeRunId": {
+        "type": "string",
+        "pattern": "^[a-f0-9-]{36}$"
+      },
+      "maxCostUsd": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "maxCallCostUsd": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "specification": {
+        "$ref": "#/$defs/specification"
+      },
+      "specChange": {
+        "type": "object",
+        "required": [
+          "expectedHash",
+          "expectedRevision",
+          "reason"
+        ],
+        "properties": {
+          "expectedHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "specification": {
+            "$ref": "#/$defs/specification"
+          }
+        }
+      },
+      "clarification": {
+        "type": "object",
+        "required": [
+          "hash",
+          "answers"
+        ],
+        "properties": {
+          "hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "answers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "answer"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "answer": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                }
+              }
+            }
+          }
+        }
+      },
+      "maxInferenceJobs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "inferenceTtlMs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 3600000
+      },
+      "cancelInference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "hash"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "pattern": "^[a-f0-9-]{36}$"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "inferenceReply": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "hash",
+          "output"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "pattern": "^[a-f0-9-]{36}$"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "output": {
+            "type": "object",
+            "description": "At most 64000 UTF-8 JSON bytes; output shape must match the persisted job."
+          }
+        }
+      }
+    },
+    "description": "Structural schema. validateRequest additionally enforces local path, verifier authorization, provider pairing and bound relations.",
+    "$defs": {
+      "specification": {
+        "type": "object",
+        "required": [
+          "summary",
+          "criteria",
+          "plan"
+        ],
+        "properties": {
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "criteria": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "plan": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "validate": true,
+    "provider": true,
+    "agentCli": "qf.agent/v1-revision-7",
+    "agentEvidence": "Site consumer evidence is separate from upstream live proof"
+  }
+}

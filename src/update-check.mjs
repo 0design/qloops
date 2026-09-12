@@ -3,7 +3,7 @@
  * differently for no reason.
  *
  * THE RULES, all of them:
- *   • CLI ONLY. Nothing here runs during `qf run`'s work; a loop must never
+ *   • CLI ONLY. Nothing here runs during `qloops run`'s work; a loop must never
  *     become slower or less reliable because a version check was in the way.
  *   • A plain GET of a STATIC JSON file. No identifiers of any kind — no machine
  *     id, no version query string, no telemetry. The request says nothing about

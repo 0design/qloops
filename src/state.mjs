@@ -12,7 +12,7 @@
  * copy of it, it is a different thing with a different job.
  *
  * WRITES ARE ATOMIC (tmp + rename). A run interrupted mid-write must not leave a
- * half-written JSON that the next `qf status` then refuses to parse — that turns
+ * half-written JSON that the next `qloops status` then refuses to parse — that turns
  * one failed run into a permanently broken directory.
  */
 import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync, existsSync } from "node:fs";
@@ -53,6 +53,7 @@ export class RunStore {
   }
 
   runFile(runId) {
+    if (typeof runId !== "string" || !/^[a-zA-Z0-9-]{1,100}$/.test(runId)) throw new Error("Invalid runId");
     return join(this.runsDir, `${runId}.json`);
   }
 
@@ -82,7 +83,7 @@ export class RunStore {
       startedAt: run.startedAt,
       finishedAt: run.finishedAt,
       costUsd: Number(run.costUsd ?? 0),
-      exitCode: run.status === "success" ? 0 : 1,
+      exitCode: run.status === "success" ? 0 : run.status === "waiting_human" ? 2 : run.status === "cancelled" ? 130 : 1,
     });
   }
 
@@ -90,7 +91,7 @@ export class RunStore {
     return readJson(join(this.dir, "last-run.json"));
   }
 
-  /** Newest first. Used by `qf status`. */
+  /** Newest first. Used by `qloops status`. */
   listRuns(limit = 20) {
     if (!existsSync(this.runsDir)) return [];
     return readdirSync(this.runsDir)
@@ -103,6 +104,7 @@ export class RunStore {
 
   /** Write one file-sink delivery and return its path. */
   writeSink(runId, body) {
+    this.runFile(runId); // validate caller-provided identity before constructing an output path
     mkdirSync(this.outDir, { recursive: true });
     const file = join(this.outDir, `${runId}.txt`);
     writeFileSync(file, body, "utf8");

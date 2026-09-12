@@ -1,8 +1,8 @@
 /**
  * YAML reader for loop manifests — a documented SUBSET, not a YAML engine.
  *
- * WHY HAND-WRITTEN. The whole point of this package is that `qf validate` and
- * `qf run --dry-run` work on a clean machine with nothing installed: unpack the
+ * WHY HAND-WRITTEN. The whole point of this package is that `qloops validate` and
+ * `qloops run --dry-run` work on a clean machine with nothing installed: unpack the
  * tarball, run it. One dependency turns that into "…after npm install finishes,
  * assuming you have network". A manifest format whose reader needs a package
  * manager is a format with a footnote.

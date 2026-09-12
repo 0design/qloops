@@ -1,0 +1,37 @@
+{
+  "id": "determined",
+  "name": "determined",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Reach approved criteria with independent evidence and bounded repair.",
+  "value": "Reach approved criteria with independent evidence and bounded repair.",
+  "input": {
+    "plan": {
+      "type": "object",
+      "required": true,
+      "notes": "Approved criteria, verifier identities and repair limit."
+    },
+    "artifact": {
+      "type": "object",
+      "required": true,
+      "notes": "Exact revision and digest."
+    }
+  },
+  "output": {
+    "result": {
+      "type": "object",
+      "notes": "Verified result or explicit human action with failed and unknown criteria."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/determined.mjs",
+    "limitation": "Reducer exists; a composable Registry executor/verifier binding still needs acceptance."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

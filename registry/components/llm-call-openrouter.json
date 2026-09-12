@@ -1,13 +1,13 @@
 {
-  "id": "llm-call",
-  "name": "LLM call",
+  "id": "llm-call-openrouter",
+  "name": "llm-call/openrouter",
   "kind": "step",
-  "description": "An isolated model request. SPEC-MANIFEST.md §5.2. The step's input is every prior successful output, as JSON, capped at 60 000 characters. Inside a fan-out lane, its own item comes first. No key means the step fails. There is no canned fallback. Isolated is the point — no memory of its own. agent-call is RESERVED.",
+  "description": "OpenRouter inference with an explicit model and local secret reference. This is not the current CLI agent.",
   "input": {
     "instructions": {
       "type": "string",
       "required": true,
-      "notes": "templated. SPEC-MANIFEST.md §5.2."
+      "notes": "templated. SPEC-MANIFEST.md \u00a75.2."
     },
     "format": {
       "type": "string",
@@ -27,7 +27,7 @@
     "role": {
       "type": "string",
       "required": false,
-      "notes": "prepended as \"You are the ⟨role⟩ agent…\""
+      "notes": "prepended as \"You are the \u27e8role\u27e9 agent\u2026\""
     },
     "model": {
       "type": "string",
@@ -38,7 +38,7 @@
   "output": {
     "text": {
       "type": "string",
-      "notes": "format: text — {text, model}."
+      "notes": "format: text \u2014 {text, model}."
     },
     "model": {
       "type": "string",
@@ -50,7 +50,15 @@
     }
   },
   "needsEnv": [
-    "OPENROUTER_API_KEY"
+    "OPENROUTER_API_KEY",
+    "OPENROUTER_MODEL"
   ],
-  "usedBy": []
+  "usedBy": [],
+  "runtimeKind": "llm-call",
+  "contentType": "component",
+  "value": "OpenRouter inference with an explicit model and local secret reference. This is not the current CLI agent.",
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  }
 }

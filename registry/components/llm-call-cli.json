@@ -1,0 +1,32 @@
+{
+  "id": "llm-call-cli",
+  "name": "llm-call/cli",
+  "kind": "step",
+  "contentType": "component",
+  "description": "Use the current CLI agent for bounded inference without a second provider subscription.",
+  "value": "Use the current CLI agent for bounded inference without a second provider subscription.",
+  "input": {
+    "request": {
+      "type": "object",
+      "required": true,
+      "notes": "Bounded messages and expected output contract."
+    }
+  },
+  "output": {
+    "reply": {
+      "type": "object",
+      "notes": "Validated structured output bound to the original job ID and hash."
+    }
+  },
+  "needsEnv": [],
+  "implementation": {
+    "status": "partial",
+    "source": "src/caller-inference.mjs",
+    "limitation": "Existing caller jobs support specification, files and content. A generic Registry component binding is not accepted."
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "usedBy": []
+}

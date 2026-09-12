@@ -1,19 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# strict-gate — agent-gate, який МАЄ не пропустити.
-#
-# Дзеркало price-watch. Той демонструє гейт, що пропускає; цей — гейт, що
-# зупиняє. Обидва потрібні: перевірка, яку ніколи не бачили провальною, — це
-# перевірка, про яку ніхто не знає, чи вона працює.
-#
-# `escalateOn` тут НЕ `objection`: провалений гейт валить ран, а не віддає його
-# людині. Так виглядає гейт, який є остаточним рішенням.
-# =============================================================================
+# Check a draft against an explicit rubric before allowing the next workflow step.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: strict-gate
 name: "Strict gate: a check that is allowed to say no"
-version: 1.0.0
+version: 1.1.0
 description: >
   Runs a machine check that ends the run when it fails, instead of handing the
   decision to a person. The shape to use when the answer is not negotiable.
@@ -24,7 +16,6 @@ triggers:
   - kind: manual
 
 settings:
-  model: "anthropic/claude-3-haiku"
   budgetUsd: 0.10
 
 steps:
@@ -44,7 +35,6 @@ steps:
       rubric: >
         The payload holds `json.rates.UAH`. PASS only if it is above 42.0.
         Otherwise FAIL.
-      # Не objection: провал гейта — кінець рану, не питання до людини.
       escalateOn: none
 
   - id: sg-send

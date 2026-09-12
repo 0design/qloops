@@ -1,0 +1,1 @@
+{"sessionId":"demo-session","annotations":[{"id":"ann-1","kind":"feedback","comment":"The primary button is clipped on mobile.","elementPath":"main > button","intent":"fix","severity":"blocking"},{"id":"ann-2","kind":"placement","comment":"Add something here."}]}

@@ -1,31 +1,11 @@
-manifest: qf.loop/v1
+manifest: qloops.loop/v1
 
-# =============================================================================
-# price-watch — the loop that shows BOTH gates, and why they are different.
-#
-# fetch → agent-gate → human-gate → api-request.
-#
-#   agent-gate  a MACHINE check: is this actually worth waking anyone for?
-#               Its verdict is {pass, reason}. When it does not pass, the run
-#               stops here and nobody is disturbed.
-#
-#   human-gate  a PERSON decides. It sits in front of the outgoing request
-#               because that request is the irreversible part.
-#
-# This is the shape to copy whenever a loop ends in something you cannot undo:
-# let the machine filter the noise, let the person authorise the act.
-#
-# ⚠️ HONEST LIMIT. Today an agent-gate is an LLM judging against your `rubric`.
-# A real non-model checker (`mode: check`) is RESERVED in the format and
-# REFUSED by the runner — a manifest may not claim a check that will not happen.
-#
-# `qloop run` parks at the human gate and exits 2. `qloop approve` continues it;
-# `qloop approve --reject` ends it.
-# =============================================================================
+# Surface relevant price updates without repeatedly checking the source manually.
+# OpenRouter example: configure the model explicitly. CLI acceptance uses the caller interface.
 
 id: price-watch
 name: "Price watch: machine filters, human authorises"
-version: 1.0.0
+version: 1.1.0
 description: >
   Checks a rate, lets an agent-gate decide whether it is worth anyone's
   attention, then holds for a human before the outgoing request.
@@ -38,7 +18,6 @@ triggers:
   - kind: manual
 
 settings:
-  model: "anthropic/claude-3-haiku"
   budgetUsd: 0.10
 
 steps:
@@ -46,13 +25,6 @@ steps:
     kind: fetch
     config:
       name: "Fetch rate"
-      # A public, key-free JSON endpoint so the loop is runnable as shipped.
-      # Point it at whatever you actually watch.
-      #
-      # NOT api.frankfurter.app, the obvious pick: it now 301s to a host that
-      # answers 404 for the same query. Caught by running this loop rather than
-      # by reading its docs — which is the argument for shipping loops that have
-      # actually been executed.
       url: "https://open.er-api.com/v6/latest/USD"
       format: json
       timeoutSec: "30"
@@ -63,13 +35,10 @@ steps:
       name: "Worth waking anyone?"
       reviewer: agent
       anchor: "rate"
-      # The rubric IS the check. Write it as a condition, not a wish.
       rubric: >
         The payload holds `json.rates`, a map of currency code to rate against
         USD. PASS only if `json.rates.UAH` is above 42.0.
         Otherwise FAIL — an ordinary day is not news.
-      # A failed check hands the decision to a person rather than killing the
-      # run outright. Set anything else here and a failed gate fails the run.
       escalateOn: objection
 
   - id: pw-confirm

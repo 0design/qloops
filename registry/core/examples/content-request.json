@@ -1,0 +1,25 @@
+{
+  "protocolVersion": "qf.content-request/v1",
+  "requestId": "synthetic-content-example",
+  "workspace": "/ABSOLUTE/PATH/TO/EXISTING/TEST/WORKSPACE",
+  "allowedOrigins": ["http://127.0.0.1:8787"],
+  "deadlineMs": 90000,
+  "maxItems": 1,
+  "sources": [{"id": "synthetic-source-1", "url": "http://127.0.0.1:8787/source/1"}],
+  "profile": {
+    "language": "Ukrainian",
+    "tone": "factual",
+    "instructions": "SYNTHETIC TEST ONLY. Write one short paragraph using the supplied source. Label it as a synthetic test and include its source URL verbatim. This is not an owner-approved editorial profile."
+  },
+  "provider": {
+    "kind": "codex",
+    "model": "gpt-5.6-luna",
+    "executable": "/ABSOLUTE/PATH/TO/INSTALLED/codex",
+    "payerScope": "local-cli"
+  },
+  "receiver": {
+    "kind": "webhook",
+    "id": "synthetic-local-receiver",
+    "url": "http://127.0.0.1:8787/receipt"
+  }
+}
